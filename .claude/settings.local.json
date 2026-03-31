@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx expo:*)",
+      "Bash(npx create-expo-app@latest . --template blank-typescript)",
+      "Bash(npm install:*)",
+      "Bash(node -e \"console.log\\(require.resolve\\(''@expo/cli''\\)\\)\")",
+      "Bash(npm -v)",
+      "Bash(npx tsc:*)",
+      "Bash(node_modules/typescript/bin/tsc --noEmit)"
+    ]
+  }
+}

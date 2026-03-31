@@ -1,20 +1,25 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import 'react-native-reanimated';
+import 'react-native-gesture-handler';
+import * as Sentry from '@sentry/react-native';
+import { AppRoot } from './src/app/AppRoot';
+import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from './src/config/runtime';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+if (!RUNTIME_CONFIG.sentryDsn) {
+  warnMissingRuntimeConfig(
+    'sentryDsn',
+    'Sentry is disabled until EXPO_PUBLIC_SENTRY_DSN is set.',
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+Sentry.init({
+  dsn: RUNTIME_CONFIG.sentryDsn,
+  // No user identification — consistent with no-account policy
+  // No session replay, no performance monitoring
+  tracesSampleRate: 0,
+  debug: __DEV__,
+  enabled: Boolean(RUNTIME_CONFIG.sentryDsn) && !__DEV__,
+});
+
+export default Sentry.wrap(function App() {
+  return <AppRoot />;
 });
