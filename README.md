@@ -4,9 +4,11 @@ ECHO is a minimalist mood check-in app: one emoji, one word, one optional breath
 
 ## Start Here
 
-- Read `ARCHITECT.md` for the current system shape and non-negotiable product rules.
-- Read `VIBE_CODING.md` for the fastest path to the right files when you want to change something.
-- Use `IMPLEMENTATION_PLAN.md` as the phase-by-phase build reference, not the current source of truth.
+- Read `ARCHITECT.md` for the current system shape, non-negotiable product rules, file routing, and QA expectations.
+- Use this `README.md` for install, environment setup, scripts, and repo overview.
+- Project rule: keep `README.md` and `ARCHITECT.md` updated as part of every relevant change. Do not leave doc updates as follow-up cleanup.
+- Use `IMPLEMENTATION_PLAN.md` only as the phased build reference, not the current source of truth.
+- `VIBE_CODING.md` and `CLAUDE.md` are lightweight compatibility pointers back to `ARCHITECT.md`.
 
 ## Quick Start
 
@@ -37,6 +39,7 @@ Optional Sentry config:
 Server-only config:
 
 - `OPENAI_API_KEY` lives in the Supabase Edge Function environment, never in the client app.
+- Do not add, paste, rotate, or use any API key unless the project owner explicitly approves it for that task.
 
 ## Scripts
 

@@ -2,17 +2,80 @@
 
 > **Always read this file at the start of every new conversation about this project.**
 > Update this file whenever a significant architectural decision is made or changed.
-> For setup and file-routing, pair this with `README.md` and `VIBE_CODING.md`.
+> Use `README.md` only for setup, env, and commands.
+> Project rule: keep `ARCHITECT.md` and `README.md` current together. If a change affects architecture, product rules, setup, env, scripts, or integration paths, update the relevant doc before closing the task.
+> `VIBE_CODING.md` and `CLAUDE.md` are compatibility pointers back to this file.
 
-## Document Roles
+## Doc Map
 
-- `ARCHITECT.md` = current implementation truth
-- `IMPLEMENTATION_PLAN.md` = phase tracker and remaining work
-- `VIBE_CODING.md` = fastest file-routing guide for making changes
+- `ARCHITECT.md` = single engineering source of truth for rules, architecture, file routing, and QA
+- `README.md` = install, environment setup, scripts, and repo overview
+- Both must be kept current as part of project maintenance, not treated as optional cleanup
+- `IMPLEMENTATION_PLAN.md` = historical phased plan and remaining launch work, not the current source of truth
+- `VIBE_CODING.md` and `CLAUDE.md` = short compatibility shims for tools or old habits
 
 ## Current Phase
 
 Core v1 implementation exists. The active phase is stabilization and launch prep: production config, device QA, prompt QA, store setup, and submission work.
+
+---
+
+## Project Defaults
+
+- Language: TypeScript (strict) for all new files
+- Framework: React Native / Expo SDK 54
+- Navigation: flat stacks only; no tabs, no drawer, no nested navigators inside render functions
+- State: React Context only; no Redux or Zustand
+- Local data: expo-sqlite only; no AsyncStorage
+- Wrap up changes with `npm run verify`
+
+---
+
+## Non-Negotiables
+
+- No home screen. `EmojiPickerScreen` is the default route.
+- The 3-minute hard cap must survive screen transitions and fade before close. It is not a setting and cannot be disabled.
+- AI is a mirror, not a coach. No advice, diagnosis, or guilt language in any AI output.
+- Raw entries stay on device. Only the anonymized weekly summary reaches the Supabase Edge Function.
+- `OPENAI_API_KEY` never goes in client config. Server-side only, in the Supabase Edge Function environment.
+- No API key may be added, pasted, rotated, or used unless the project owner explicitly approves it for that task.
+
+---
+
+## Change Routing
+
+- Change onboarding flow: `src/screens/onboarding`, `src/navigation/OnboardingNavigator.tsx`, `src/constants/copy.ts`
+- Change the daily ritual: `src/screens/daily`, `src/types/navigation.ts`, `src/db/entries.ts`
+- Change the hard cap: `src/store/AppContext.tsx`, `src/app/AppRoot.tsx`, `src/services/timer.ts`, `src/components/FadeOverlay.tsx`, `src/utils/closeApp.ts`
+- Change weekly reflections: `src/services/reflection.ts`, `src/screens/reflection`, `src/db/reflections.ts`, `supabase/functions/weekly-reflection/index.ts`
+- Change notification behavior: `src/services/notifications.ts`, `src/hooks/useNotificationResponse.ts`, `src/app/AppRoot.tsx`
+- Change premium gating: `src/services/purchases.ts`, `src/hooks/useEntitlements.ts`, `src/screens/paywall/PaywallScreen.tsx`, `src/screens/reflection/ReflectionCardScreen.tsx`
+- Change settings/about links or public keys: `.env.example`, `app.config.ts`, `src/config/runtime.ts`, `src/screens/settings`
+- Change Expo startup or web preview: `package.json`, `scripts/repair-expo-bin.js`, `app.json`, `app.config.ts`
+
+---
+
+## Working Rhythm
+
+1. Read `ARCHITECT.md` before large changes or new sessions.
+2. Use `README.md` for setup, env, and command reference.
+3. Patch the smallest surface area that solves the problem.
+4. Update `ARCHITECT.md` when a product rule, architecture rule, or integration path changes.
+5. Update `README.md` when setup, env, scripts, or integration-facing workflow changes.
+6. If a change affects both engineering truth and setup/usage, update both docs in the same task.
+7. Add or update tests when you change pure logic.
+8. Run `npm run verify` before wrapping up behavior changes.
+
+---
+
+## Manual QA For Risky Changes
+
+- Onboarding: first launch, notification permission, reminder scheduling, first entry flow
+- Daily flow: notification launch, timer visibility, hard-cap fade, completion close behavior
+- Sunday flow: reflection notification tap, cached reflection reuse, crisis-card routing
+- Daily repeat-entry rule: same-day reopen shows a done state and does not overwrite the stored entry
+- Monetization: premium entitlement refresh, paywall redirect after monthly free reflection
+- Settings: reminder changes, privacy-policy link, About screen version display
 
 ---
 
@@ -47,9 +110,10 @@ ECHO/
 ├── app.config.ts                    — Injects `.env` values into Expo `extra` and conditionally enables native Sentry plugin config.
 ├── eas.json                         — EAS Build profiles.
 ├── .env.example                     — Client runtime config template.
-├── README.md                        — Setup, commands, and repo overview.
-├── VIBE_CODING.md                   — Fast file-routing guide for future coding sessions.
-├── ARCHITECT.md                     — This file. Always read at conversation start.
+├── README.md                        — Setup, env, commands, and repo overview.
+├── ARCHITECT.md                     — Primary engineering doc. Read first in new sessions.
+├── VIBE_CODING.md                   — Compatibility pointer to ARCHITECT.md.
+├── CLAUDE.md                        — Compatibility pointer to ARCHITECT.md.
 ├── IMPLEMENTATION_PLAN.md           — Full phased build plan.
 ├── PRD_v1.md                        — Product Requirements Document.
 ├── scripts/repair-expo-bin.js       — Repairs the local Expo launcher after installs so `npx expo start` works reliably.
@@ -297,7 +361,7 @@ Product IDs: `echo_premium_monthly`, `echo_premium_yearly`.
 | File | Why it matters |
 |---|---|
 | [README.md](README.md) | Setup, scripts, and top-level project map |
-| [VIBE_CODING.md](VIBE_CODING.md) | Fastest way to find the right files for a change |
+| [ARCHITECT.md](ARCHITECT.md) | Single source of truth for rules, architecture, file routing, and QA |
 | [app.config.ts](app.config.ts) | Bridges `.env` values into Expo runtime config |
 | [src/config/runtime.ts](src/config/runtime.ts) | Normalizes client config and removes placeholder leakage |
 | [src/services/timer.ts](src/services/timer.ts) | The 3-min hard cap — most critical non-negotiable constraint |
@@ -327,6 +391,8 @@ Product IDs: `echo_premium_monthly`, `echo_premium_yearly`.
 | Supabase function env | `OPENAI_API_KEY` | Server-side OpenAI key for `weekly-reflection` |
 | [eas.json](eas.json) | Apple/Google IDs | App Store Connect + Play Console credentials |
 
+Secret-handling rule: no API key may be added, pasted, rotated, or used anywhere in this project unless the project owner explicitly approves it for that task. This includes local `.env` files, hosted environment variables, CLI commands, and dashboard updates.
+
 ---
 
 ## Open Decisions (from PRD)
@@ -354,4 +420,4 @@ Product IDs: `echo_premium_monthly`, `echo_premium_yearly`.
 
 ---
 
-*Last updated: 2026-03-30 — Added app-level timed sessions, bootstrap recovery, safer notification replay handling, and stronger reflection/data integrity checks.*
+*Last updated: 2026-03-31 — Consolidated project guidance into ARCHITECT.md, kept README.md for setup, shrank VIBE_CODING.md and CLAUDE.md into compatibility pointers, and added a project rule to keep ARCHITECT.md and README.md current.*

@@ -1,0 +1,55 @@
+name: EAS Build
+
+on:
+  push:
+    tags:
+      - "v*"           # triggers on v1.0.0, v1.1.0, etc.
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "EAS build profile"
+        required: true
+        default: preview
+        type: choice
+        options: [development, preview, production]
+      platform:
+        description: "Platform"
+        required: true
+        default: all
+        type: choice
+        options: [ios, android, all]
+
+jobs:
+  build:
+    name: EAS Build (${{ github.event.inputs.profile || 'production' }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run CI checks before build
+        run: npm run verify
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build (tag-triggered production)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: eas build --platform all --profile production --non-interactive
+
+      - name: Build (manual dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: eas build --platform ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --non-interactive

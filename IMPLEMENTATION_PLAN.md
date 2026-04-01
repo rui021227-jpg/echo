@@ -1,12 +1,12 @@
 # ECHO App - Complete Implementation Plan
 
-> Status note: this file is the original phased plan. For the current codebase shape, use `ARCHITECT.md` and `VIBE_CODING.md` first.
+> Status note: this file is the original phased plan. For the current codebase shape, use `ARCHITECT.md` first and `README.md` for setup details.
 
 ## Document Roles
 
-- `ARCHITECT.md` = current implementation truth
+- `ARCHITECT.md` = single engineering source of truth
+- `README.md` = setup, env, commands, and repo overview
 - `IMPLEMENTATION_PLAN.md` = phase tracker and remaining work
-- `VIBE_CODING.md` = fastest file-routing guide for making changes
 
 ## Current Phase Snapshot
 
@@ -53,7 +53,7 @@ npm install -D @types/react jest @testing-library/react-native @testing-library/
 ECHO/
 ├── app.json / app.config.ts / eas.json
 ├── .env.example
-├── README.md / VIBE_CODING.md / ARCHITECT.md / IMPLEMENTATION_PLAN.md
+├── README.md / ARCHITECT.md / VIBE_CODING.md / CLAUDE.md / IMPLEMENTATION_PLAN.md
 ├── App.tsx                          # Entry point
 ├── scripts/repair-expo-bin.js       # Keeps npx expo start working after installs
 ├── supabase/functions/weekly-reflection/index.ts

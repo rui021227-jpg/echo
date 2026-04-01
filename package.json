@@ -11,7 +11,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "typecheck": "node node_modules/typescript/bin/tsc --noEmit",
-    "verify": "npm run typecheck && npm test -- --runInBand"
+    "verify": "npm run typecheck && npm test -- --runInBand",
+    "qa:prompt": "node scripts/test-prompt-qa.js"
   },
   "jest": {
     "preset": "jest-expo",
