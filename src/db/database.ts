@@ -75,3 +75,8 @@ export async function setSetting(key: string, value: string): Promise<void> {
     value,
   );
 }
+
+export async function deleteAllData(): Promise<void> {
+  const database = getDatabase();
+  await database.execAsync('DELETE FROM entries; DELETE FROM reflections;');
+}

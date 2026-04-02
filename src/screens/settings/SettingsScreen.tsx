@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
-import { getSetting, setSetting } from '../../db/database';
+import { getSetting, setSetting, deleteAllData } from '../../db/database';
 import { scheduleDailyReminder } from '../../services/notifications';
 import { useApp } from '../../store/AppContext';
 
@@ -27,6 +27,21 @@ export function SettingsScreen({ navigation }: Props) {
     const period = h >= 12 ? 'PM' : 'AM';
     const displayHour = h % 12 || 12;
     return `${displayHour}:${String(m).padStart(2, '0')} ${period}`;
+  };
+
+  const handleDeleteAll = () => {
+    Alert.alert(
+      COPY.settings.deleteAllConfirmTitle,
+      COPY.settings.deleteAllConfirmMessage,
+      [
+        { text: COPY.settings.cancel, style: 'cancel' },
+        {
+          text: COPY.settings.deleteAllConfirmButton,
+          style: 'destructive',
+          onPress: () => void deleteAllData(),
+        },
+      ],
+    );
   };
 
   const adjustHour = async (delta: number) => {
@@ -66,6 +81,10 @@ export function SettingsScreen({ navigation }: Props) {
         onPress={() => navigation.navigate('About')}
       >
         <Text style={styles.rowText}>{COPY.settings.about}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.row, styles.destructiveRow]} onPress={handleDeleteAll}>
+        <Text style={styles.destructiveText}>{COPY.settings.deleteAllData}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -132,5 +151,12 @@ const styles = StyleSheet.create({
   rowValue: {
     fontSize: FONT_SIZES.sm,
     color: COLORS.muted,
+  },
+  destructiveRow: {
+    marginTop: SPACING.xl,
+  },
+  destructiveText: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.danger,
   },
 });
