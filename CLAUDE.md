@@ -2,7 +2,7 @@
 
 This file is kept for tool compatibility.
 
-Read `ARCHITECT.md` first for the current system rules, architecture, file-routing guidance, QA checklist, and safety constraints.
+Read `docs/ARCHITECT.md` first for the current system rules, architecture, file-routing guidance, QA checklist, and safety constraints.
 
 Use `README.md` for setup, environment variables, and commands.
 
@@ -10,7 +10,7 @@ Project rule reminder:
 
 - Do not add or use any API key unless the project owner explicitly approves it for that task.
 - Run `npm run verify` before wrapping up behavior changes.
-- Update `ARCHITECT.md` when the architecture or integration path changes.
+- Update `docs/ARCHITECT.md` when the architecture or integration path changes.
 
 ---
 

@@ -30,6 +30,12 @@ yarn-error.*
 .DS_Store
 *.pem
 
+# Figma MCP screenshot cache
+screenshot/
+
+# R history (unrelated tooling)
+.Rhistory
+
 # local env files
 .env
 .env*.local
