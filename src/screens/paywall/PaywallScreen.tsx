@@ -123,7 +123,8 @@ export function PaywallScreen({ navigation, route }: Props) {
             onPress={() => handlePurchase(annualPkg)}
             disabled={purchasing}
           >
-            <Text style={styles.packagePrice}>{COPY.paywall.yearly}</Text>
+            <Text style={styles.packageLabel}>{COPY.paywall.yearlyLabel}</Text>
+            <Text style={styles.packagePrice}>{annualPkg.product.priceString}</Text>
             <Text style={styles.savings}>{COPY.paywall.yearlySavings}</Text>
           </TouchableOpacity>
         )}
@@ -134,7 +135,8 @@ export function PaywallScreen({ navigation, route }: Props) {
             onPress={() => handlePurchase(monthlyPkg)}
             disabled={purchasing}
           >
-            <Text style={styles.packagePrice}>{COPY.paywall.monthly}</Text>
+            <Text style={styles.packageLabel}>{COPY.paywall.monthlyLabel}</Text>
+            <Text style={styles.packagePrice}>{monthlyPkg.product.priceString}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -147,7 +149,7 @@ export function PaywallScreen({ navigation, route }: Props) {
         style={styles.closeButton}
         onPress={() => navigation.goBack()}
       >
-        <Text style={styles.closeText}>Not now</Text>
+        <Text style={styles.closeText}>{COPY.paywall.maybeLater}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -209,6 +211,11 @@ const styles = StyleSheet.create({
   annualButton: {
     borderWidth: 2,
     borderColor: COLORS.accent,
+  },
+  packageLabel: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.secondary,
+    marginBottom: SPACING.xs,
   },
   packagePrice: {
     fontSize: FONT_SIZES.lg,

@@ -4,7 +4,8 @@ import * as Localization from 'expo-localization';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../constants/theme';
-import { CRISIS_CARD_TEXT, getCrisisLine, getCrisisPhone } from '../../constants/crisis';
+import { COPY } from '../../constants/copy';
+import { getCrisisLine, getCrisisPhone } from '../../constants/crisis';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'CrisisCard'>;
 
@@ -19,11 +20,24 @@ export function CrisisCardScreen({}: Props) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.message}>{CRISIS_CARD_TEXT}</Text>
+      {/* Soft background glow */}
+      <View style={styles.glow} />
 
-        <TouchableOpacity onPress={handleCall} style={styles.phoneContainer}>
-          <Text style={styles.phoneLine}>{crisisLine}</Text>
+      <View style={styles.card}>
+        {/* Visual anchor */}
+        <Text style={styles.anchor}>{COPY.crisis.anchor}</Text>
+
+        <Text style={styles.heading}>{COPY.crisis.heading}</Text>
+        <Text style={styles.subheading}>{COPY.crisis.subheading}</Text>
+
+        <View style={styles.divider} />
+
+        <Text style={styles.callPrompt}>{COPY.crisis.callPrompt}</Text>
+
+        <Text style={styles.crisisLineText}>{crisisLine}</Text>
+
+        <TouchableOpacity onPress={handleCall} style={styles.callButton} activeOpacity={0.8}>
+          <Text style={styles.callButtonText}>{COPY.crisis.callButton}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -38,28 +52,75 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACING.xl,
   },
+  glow: {
+    position: 'absolute',
+    width: 280,
+    height: 280,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: 'rgba(90,100,180,0.08)',
+    top: '25%',
+  },
   card: {
     backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.xl,
     width: '100%',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(90,100,200,0.18)',
   },
-  message: {
+  anchor: {
+    fontSize: FONT_SIZES.xxxl,
+    marginBottom: SPACING.md,
+  },
+  heading: {
     fontSize: FONT_SIZES.lg,
     color: COLORS.primary,
-    lineHeight: 28,
-    marginBottom: SPACING.xl,
+    fontWeight: '600',
     textAlign: 'center',
+    marginBottom: SPACING.sm,
+    lineHeight: 28,
   },
-  phoneContainer: {
-    backgroundColor: COLORS.surfaceLight,
-    borderRadius: BORDER_RADIUS.md,
-    padding: SPACING.md,
+  subheading: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.secondary,
+    textAlign: 'center',
+    lineHeight: 26,
+    marginBottom: SPACING.lg,
   },
-  phoneLine: {
+  divider: {
+    height: 1,
+    width: '60%',
+    backgroundColor: 'rgba(90,100,200,0.15)',
+    marginBottom: SPACING.lg,
+  },
+  callPrompt: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.muted,
+    textAlign: 'center',
+    marginBottom: SPACING.sm,
+    fontStyle: 'italic',
+  },
+  crisisLineText: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.secondary,
+    textAlign: 'center',
+    marginBottom: SPACING.lg,
+    lineHeight: 22,
+  },
+  callButton: {
+    backgroundColor: 'rgba(90,100,200,0.22)',
+    borderRadius: BORDER_RADIUS.full,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xxl,
+    borderWidth: 1,
+    borderColor: 'rgba(90,100,220,0.4)',
+  },
+  callButtonText: {
     fontSize: FONT_SIZES.md,
     color: COLORS.accent,
-    textAlign: 'center',
     fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 0.5,
   },
 });
