@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native'
 import * as Application from 'expo-application';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
-import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from '../../config/runtime';
+import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from '../../config';
 
 export function AboutScreen() {
   const version = Application.nativeApplicationVersion ?? '1.0.0';

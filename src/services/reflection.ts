@@ -7,7 +7,7 @@ import { isCrisis } from './crisisDetector';
 import { getEntriesForWeek } from '../db/entries';
 import { insertReflection, getReflectionForWeek } from '../db/reflections';
 import { COPY } from '../constants/copy';
-import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from '../config/runtime';
+import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from '../config';
 
 export function buildPayload(weekStart: string, entries: Entry[]): AIPayload {
   return {

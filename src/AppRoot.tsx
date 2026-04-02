@@ -1,16 +1,16 @@
 import React, { useCallback, useRef } from 'react';
 import { NavigationContainer, type NavigationContainerRef } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { RootNavigator } from '../navigation/RootNavigator';
-import { AppProvider, useApp } from '../store/AppContext';
-import { useNotificationResponse } from '../hooks/useNotificationResponse';
-import { getReflectionWeekStart, type NotificationType } from '../services/notifications';
-import type { MainStackParamList } from '../types/navigation';
+import { RootNavigator } from './navigation/RootNavigator';
+import { AppProvider, useApp } from './store/AppContext';
+import { useNotificationResponse } from './hooks/useNotificationResponse';
+import { getReflectionWeekStart, type NotificationType } from './services/notifications';
+import type { MainStackParamList } from './types/navigation';
 import { View, ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { COLORS } from '../constants/theme';
-import { FadeOverlay } from '../components/FadeOverlay';
-import { closeApp } from '../utils/closeApp';
-import { FONT_SIZES, SPACING } from '../constants/theme';
+import { COLORS } from './constants/theme';
+import { FadeOverlay } from './components/FadeOverlay';
+import { closeApp } from './utils/closeApp';
+import { FONT_SIZES, SPACING } from './constants/theme';
 
 function AppContent() {
   const {

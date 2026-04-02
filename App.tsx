@@ -1,8 +1,8 @@
 import 'react-native-reanimated';
 import 'react-native-gesture-handler';
 import * as Sentry from '@sentry/react-native';
-import { AppRoot } from './src/app/AppRoot';
-import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from './src/config/runtime';
+import { AppRoot } from './src/AppRoot';
+import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from './src/config';
 
 if (!RUNTIME_CONFIG.sentryDsn) {
   warnMissingRuntimeConfig(

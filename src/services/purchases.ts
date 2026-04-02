@@ -3,7 +3,7 @@ import Purchases, {
   type PurchasesPackage,
 } from 'react-native-purchases';
 import { Platform } from 'react-native';
-import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from '../config/runtime';
+import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from '../config';
 
 const ENTITLEMENT_ID = 'premium';
 let purchasesConfigured = false;
