@@ -13,6 +13,8 @@ export const COPY = {
     notificationSkip: 'You can enable this later in Settings.',
     reminderTitle: 'We\u2019ll come to you.',
     setReminder: 'Set reminder',
+    completionMessage: 'You\u2019re all set \u2728',
+    completionSubtitle: 'See you tomorrow.',
   },
 
   // Daily loop

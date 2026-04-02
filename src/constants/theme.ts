@@ -40,3 +40,42 @@ export const BORDER_RADIUS = {
   xl: 24,
   full: 9999,
 } as const;
+
+export const SHADOWS = {
+  card: {
+    shadowColor: '#7b7fda',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  glow: {
+    shadowColor: '#7b7fda',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  soft: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+};
+
+export const BORDERS = {
+  card: {
+    borderWidth: 1 as const,
+    borderColor: 'rgba(123, 127, 218, 0.15)',
+  },
+  subtle: {
+    borderWidth: 1 as const,
+    borderColor: 'rgba(226, 226, 240, 0.08)',
+  },
+  accent: {
+    borderWidth: 1 as const,
+    borderColor: 'rgba(123, 127, 218, 0.4)',
+  },
+};
