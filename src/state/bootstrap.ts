@@ -1,4 +1,4 @@
-import { getSetting, initDatabase } from '../db/database';
+import { getSetting, initDatabase } from '../database/database';
 import { initPurchases } from '../services/purchases';
 
 export interface BootstrapDependencies {

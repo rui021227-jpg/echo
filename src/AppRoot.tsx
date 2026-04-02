@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { NavigationContainer, type NavigationContainerRef } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { RootNavigator } from './navigation/RootNavigator';
-import { AppProvider, useApp } from './store/AppContext';
+import { AppProvider, useApp } from './state/AppContext';
 import { useNotificationResponse } from './hooks/useNotificationResponse';
 import { getReflectionWeekStart, type NotificationType } from './services/notifications';
 import type { MainStackParamList } from './types/navigation';

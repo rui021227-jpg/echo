@@ -12,7 +12,7 @@ import type { MainStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
 import { getOfferings, purchasePackage, restorePurchases } from '../../services/purchases';
-import { useApp } from '../../store/AppContext';
+import { useApp } from '../../state/AppContext';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Paywall'>;
 

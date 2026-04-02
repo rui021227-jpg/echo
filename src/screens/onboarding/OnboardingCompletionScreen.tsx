@@ -11,8 +11,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { OnboardingStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
-import { setSetting } from '../../db/database';
-import { useApp } from '../../store/AppContext';
+import { setSetting } from '../../database/database';
+import { useApp } from '../../state/AppContext';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'OnboardingCompletion'>;
 

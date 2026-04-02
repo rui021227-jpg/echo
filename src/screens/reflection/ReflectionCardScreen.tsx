@@ -6,8 +6,8 @@ import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../constants/them
 import { COPY } from '../../constants/copy';
 import { WeatherAvatar } from '../../components/WeatherAvatar';
 import { processReflection } from '../../services/reflection';
-import { getReflectionForWeek, getReflectionCountThisMonth } from '../../db/reflections';
-import { useApp } from '../../store/AppContext';
+import { getReflectionForWeek, getReflectionCountThisMonth } from '../../database/reflections';
+import { useApp } from '../../state/AppContext';
 import type { Reflection } from '../../types/reflection';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'ReflectionCard'>;

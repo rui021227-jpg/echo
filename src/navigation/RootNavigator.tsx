@@ -1,5 +1,5 @@
 import React from 'react';
-import { useApp } from '../store/AppContext';
+import { useApp } from '../state/AppContext';
 import { OnboardingNavigator } from './OnboardingNavigator';
 import { MainNavigator } from './MainNavigator';
 

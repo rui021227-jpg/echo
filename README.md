@@ -75,9 +75,9 @@ ECHO/
 │   │
 │   ├── components/          # Reusable UI: EmojiCircle, BreathingAnimation, WeatherAvatar, FadeOverlay, GlassCard
 │   ├── navigation/          # React Navigation stacks: Root, Main, Onboarding
-│   ├── store/               # Global state (AppContext) + bootstrap logic
+│   ├── state/               # Global state (AppContext) + bootstrap logic
 │   ├── services/            # Business logic: timer, notifications, reflection, purchases, content filter, crisis detector
-│   ├── db/                  # SQLite: database setup, entries CRUD, reflections CRUD
+│   ├── database/            # SQLite: database setup, entries CRUD, reflections CRUD
 │   ├── hooks/               # Custom hooks: useTimer, useEntitlements, useNotificationResponse
 │   ├── constants/           # Static data: theme tokens, copy strings, emojis, avatars, crisis lines, prohibited words
 │   ├── types/               # TypeScript types: navigation params, entry shape, reflection shape

@@ -5,7 +5,7 @@ import type { MainStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
 import { FadeOverlay } from '../../components/FadeOverlay';
-import { useApp } from '../../store/AppContext';
+import { useApp } from '../../state/AppContext';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Completion'>;
 

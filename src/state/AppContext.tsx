@@ -7,7 +7,7 @@ import React, {
   useState,
   type ReactNode,
 } from 'react';
-import { getSetting, initDatabase } from '../db/database';
+import { getSetting, initDatabase } from '../database/database';
 import { useEntitlements } from '../hooks/useEntitlements';
 import { initPurchases } from '../services/purchases';
 import {

@@ -5,9 +5,9 @@ import type { MainStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
 import { BreathingAnimation } from '../../components/BreathingAnimation';
-import { insertEntry, isDuplicateEntryError } from '../../db/entries';
+import { insertEntry, isDuplicateEntryError } from '../../database/entries';
 import type { EmojiScore } from '../../types/entry';
-import { useApp } from '../../store/AppContext';
+import { useApp } from '../../state/AppContext';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Breathing'>;
 

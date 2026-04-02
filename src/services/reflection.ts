@@ -4,8 +4,8 @@ import { VALID_AVATAR_KEYS } from '../types/reflection';
 import { getDayName } from '../utils/dateHelpers';
 import { isContentSafe } from './contentFilter';
 import { isCrisis } from './crisisDetector';
-import { getEntriesForWeek } from '../db/entries';
-import { insertReflection, getReflectionForWeek } from '../db/reflections';
+import { getEntriesForWeek } from '../database/entries';
+import { insertReflection, getReflectionForWeek } from '../database/reflections';
 import { COPY } from '../constants/copy';
 import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from '../config';
 

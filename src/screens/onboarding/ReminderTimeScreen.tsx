@@ -5,7 +5,7 @@ import type { OnboardingStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
 import { scheduleDailyReminder, scheduleSundayReflection } from '../../services/notifications';
-import { setSetting } from '../../db/database';
+import { setSetting } from '../../database/database';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'ReminderTime'>;
 

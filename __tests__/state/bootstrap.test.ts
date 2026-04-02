@@ -1,4 +1,4 @@
-import { bootstrapApp } from '../../src/store/bootstrap';
+import { bootstrapApp } from '../../src/state/bootstrap';
 
 describe('bootstrapApp', () => {
   it('returns onboarding status and treats purchases as non-critical', async () => {

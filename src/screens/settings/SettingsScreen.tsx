@@ -4,9 +4,9 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
-import { getSetting, setSetting, deleteAllData } from '../../db/database';
+import { getSetting, setSetting, deleteAllData } from '../../database/database';
 import { scheduleDailyReminder } from '../../services/notifications';
-import { useApp } from '../../store/AppContext';
+import { useApp } from '../../state/AppContext';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Settings'>;
 

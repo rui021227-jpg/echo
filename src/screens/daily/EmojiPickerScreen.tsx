@@ -11,10 +11,10 @@ import type { MainStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
 import { EMOJI_SCALE } from '../../constants/emojis';
 import { EmojiCircle } from '../../components/EmojiCircle';
-import { useApp } from '../../store/AppContext';
+import { useApp } from '../../state/AppContext';
 import { todayISO } from '../../utils/dateHelpers';
 import { closeApp } from '../../utils/closeApp';
-import { hasEntryToday } from '../../db/entries';
+import { hasEntryToday } from '../../database/entries';
 import { COPY } from '../../constants/copy';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'EmojiPicker'>;

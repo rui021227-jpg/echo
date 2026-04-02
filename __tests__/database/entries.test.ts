@@ -1,6 +1,6 @@
 const mockRunAsync = jest.fn();
 
-jest.mock('../../src/db/database', () => ({
+jest.mock('../../src/database/database', () => ({
   getDatabase: () => ({
     runAsync: mockRunAsync,
   }),
@@ -10,7 +10,7 @@ import {
   EntryAlreadyExistsError,
   insertEntry,
   isDuplicateEntryError,
-} from '../../src/db/entries';
+} from '../../src/database/entries';
 
 describe('insertEntry', () => {
   beforeEach(() => {
