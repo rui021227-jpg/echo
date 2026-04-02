@@ -2,23 +2,23 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../../types/navigation';
-import { COLORS, FONT_SIZES } from '../../constants/theme';
+import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
+import { COPY } from '../../constants/copy';
 import { FadeOverlay } from '../../components/FadeOverlay';
-import { closeApp } from '../../utils/closeApp';
 import { useApp } from '../../store/AppContext';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Completion'>;
 
-const DISPLAY_DURATION_MS = 3000;
+const DISPLAY_DURATION_MS = 2800;
 
-export function CompletionScreen({}: Props) {
+export function CompletionScreen({ navigation }: Props) {
   const [fading, setFading] = useState(false);
   const { endTimedSession, secondsRemaining, isTimedSessionActive } = useApp();
 
   const handleFadeComplete = useCallback(() => {
     endTimedSession();
-    closeApp();
-  }, [endTimedSession]);
+    navigation.reset({ index: 0, routes: [{ name: 'EmojiPicker' }] });
+  }, [endTimedSession, navigation]);
 
   useEffect(() => {
     const timer = setTimeout(() => setFading(true), DISPLAY_DURATION_MS);
@@ -30,7 +30,10 @@ export function CompletionScreen({}: Props) {
       {isTimedSessionActive ? (
         <Text style={styles.timer}>{secondsRemaining}s</Text>
       ) : null}
-      <Text style={styles.checkmark}>✓</Text>
+
+      <Text style={styles.anchor}>{COPY.daily.completionAnchor}</Text>
+      <Text style={styles.message}>{COPY.daily.completionMessage}</Text>
+
       <FadeOverlay visible={fading} onFadeComplete={handleFadeComplete} />
     </View>
   );
@@ -42,17 +45,23 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: SPACING.xl,
   },
   timer: {
     position: 'absolute',
-    top: 64,
-    right: 32,
+    top: SPACING.xxxl,
+    right: SPACING.xl,
     fontSize: FONT_SIZES.sm,
     color: COLORS.muted,
   },
-  checkmark: {
-    fontSize: FONT_SIZES.xxxl,
-    color: COLORS.accent,
+  anchor: {
+    fontSize: FONT_SIZES.emoji,
+    marginBottom: SPACING.lg,
+  },
+  message: {
+    fontSize: FONT_SIZES.xl,
+    color: COLORS.primary,
     fontWeight: '300',
+    textAlign: 'center',
   },
 });
