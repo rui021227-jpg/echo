@@ -8,6 +8,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Shared the word-entry and breathing-step UI between onboarding and the daily flow
+- Added a shared safe-area, scroll, and keyboard-aware screen shell for settings, about, paywall, and word-entry layouts
+- Reminder time now saves and edits both hour and minute consistently across onboarding and settings
+- Reminder replacement is now rollback-safe, so a failed reschedule does not wipe the user’s existing daily notifications
+- Added optional cloud backup/restore in Settings with additive restore semantics so local entries and reflections are not overwritten
+- Weekly reflection payloads now send the actual device locale instead of hardcoding English
+- RevenueCat webhook persistence now fails loudly so backend write errors can retry instead of silently dropping subscription-state updates
+- Weather avatars now render with both configured gradient colors
+- Updated project docs to match the current `src/` structure and shared UI components
+
 ### In Progress
 - App Store Connect submission (iOS)
 - Google Play Console submission (Android)
@@ -31,14 +42,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - RevenueCat premium subscription (monthly + annual) for weekly AI reflections
 - Sentry crash reporting integration (opt-in via DSN env var)
 - Settings screen: reminder time configuration
+- Optional cloud backup and restore for entries/reflections via Supabase edge functions
 - About screen: version display
 
 ### Architecture
 - React Native / Expo SDK 54
-- Supabase Edge Function (Deno) for AI relay — rate-limited 2 req/IP/hr
+- Supabase Edge Functions (Deno) for AI reflection, optional cloud backup, and RevenueCat webhook handling
 - OpenAI GPT-4o mini in JSON mode
 - TypeScript strict mode
-- 60 unit tests passing across 10 suites
+- 67 unit tests passing across 12 suites
 
 ---
 

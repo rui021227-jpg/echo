@@ -1,3 +1,4 @@
+import * as Localization from 'expo-localization';
 import type { Entry } from '../types/entry';
 import type { AIPayload, AIResponse, AvatarKey } from '../types/reflection';
 import { VALID_AVATAR_KEYS } from '../types/reflection';
@@ -10,6 +11,8 @@ import { COPY } from '../constants/copy';
 import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from '../config';
 
 export function buildPayload(weekStart: string, entries: Entry[]): AIPayload {
+  const locale = Localization.getLocales()[0]?.languageTag ?? 'en';
+
   return {
     week_start: weekStart,
     entries: entries.map((e) => ({
@@ -20,7 +23,7 @@ export function buildPayload(weekStart: string, entries: Entry[]): AIPayload {
     })),
     entry_count: entries.length,
     emoji_scale: '1=lowest 5=highest',
-    user_locale: 'en',
+    user_locale: locale,
   };
 }
 

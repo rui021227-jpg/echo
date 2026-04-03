@@ -92,12 +92,12 @@ export function ReflectionCardScreen({ navigation, route }: Props) {
   if (error) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>Your reflection is on its way — check back later.</Text>
+        <Text style={styles.errorText}>{COPY.reflection.errorMessage}</Text>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backText}>Back</Text>
+          <Text style={styles.backText}>{COPY.reflection.back}</Text>
         </TouchableOpacity>
       </View>
     );

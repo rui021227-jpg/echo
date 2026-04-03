@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import * as Application from 'expo-application';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
 import { RUNTIME_CONFIG, warnMissingRuntimeConfig } from '../../config';
+import { AppScreen } from '../../components/AppScreen';
 
 export function AboutScreen() {
   const version = Application.nativeApplicationVersion ?? '1.0.0';
@@ -22,7 +23,7 @@ export function AboutScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <AppScreen scroll contentContainerStyle={styles.container}>
       <Text style={styles.appName}>{COPY.appName}</Text>
       <Text style={styles.version}>Version {version}</Text>
 
@@ -42,17 +43,17 @@ export function AboutScreen() {
           {COPY.settings.privacyPolicy}
         </Text>
       </TouchableOpacity>
-    </View>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    paddingHorizontal: SPACING.xl,
-    paddingTop: SPACING.xxxl,
+    flexGrow: 1,
+    paddingTop: SPACING.xxl,
+    paddingBottom: SPACING.xxxl,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   appName: {
     fontSize: FONT_SIZES.xxl,

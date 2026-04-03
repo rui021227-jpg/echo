@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
@@ -24,23 +25,27 @@ export function EmojiPickerScreen({ navigation, route }: Props) {
   const fromNotification = route.params?.fromNotification ?? false;
   const { secondsRemaining, isTimedSessionActive, endTimedSession } = useApp();
   const [hasCompletedToday, setHasCompletedToday] = useState<boolean | null>(null);
+  const [isSelecting, setIsSelecting] = useState(false);
 
-  useEffect(() => {
-    let active = true;
+  useFocusEffect(
+    React.useCallback(() => {
+      let active = true;
+      setIsSelecting(false);
 
-    async function checkEntryStatus() {
-      const completed = await hasEntryToday();
-      if (active) {
-        setHasCompletedToday(completed);
+      async function checkEntryStatus() {
+        const completed = await hasEntryToday();
+        if (active) {
+          setHasCompletedToday(completed);
+        }
       }
-    }
 
-    void checkEntryStatus();
+      void checkEntryStatus();
 
-    return () => {
-      active = false;
-    };
-  }, []);
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
 
   useEffect(() => {
     if (!fromNotification || !hasCompletedToday) {
@@ -56,6 +61,11 @@ export function EmojiPickerScreen({ navigation, route }: Props) {
   }, [endTimedSession, fromNotification, hasCompletedToday]);
 
   const handleEmojiPress = (score: number) => {
+    if (isSelecting) {
+      return;
+    }
+
+    setIsSelecting(true);
     navigation.navigate('WordInput', {
       emojiScore: score,
       date: todayISO(),

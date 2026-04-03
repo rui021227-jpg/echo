@@ -36,7 +36,7 @@ Core v1 implementation exists. The active phase is stabilization and launch prep
 - No home screen. `EmojiPickerScreen` is the default route.
 - The 3-minute hard cap must survive screen transitions and fade before close. It is not a setting and cannot be disabled.
 - AI is a mirror, not a coach. No advice, diagnosis, or guilt language in any AI output.
-- Raw entries stay on device. Only the anonymized weekly summary reaches the Supabase Edge Function.
+- Raw entries stay on device by default. Weekly reflections still send only the anonymized weekly summary, and cloud backup uploads entries/reflections only when the user manually triggers it in Settings.
 - `OPENAI_API_KEY` never goes in client config. Server-side only, in the Supabase Edge Function environment.
 - No API key may be added, pasted, rotated, or used unless the project owner explicitly approves it for that task.
 
@@ -45,12 +45,14 @@ Core v1 implementation exists. The active phase is stabilization and launch prep
 ## Change Routing
 
 - Change onboarding flow: `src/screens/onboarding`, `src/navigation/OnboardingNavigator.tsx`, `src/constants/copy.ts`
-- Change the daily ritual: `src/screens/daily`, `src/types/navigation.ts`, `src/db/entries.ts`
-- Change the hard cap: `src/store/AppContext.tsx`, `src/app/AppRoot.tsx`, `src/services/timer.ts`, `src/components/FadeOverlay.tsx`, `src/utils/closeApp.ts`
-- Change weekly reflections: `src/services/reflection.ts`, `src/screens/reflection`, `src/db/reflections.ts`, `supabase/functions/weekly-reflection/index.ts`
-- Change notification behavior: `src/services/notifications.ts`, `src/hooks/useNotificationResponse.ts`, `src/app/AppRoot.tsx`
+- Change the daily ritual: `src/screens/daily`, `src/types/navigation.ts`, `src/database/entries.ts`
+- Change the hard cap: `src/state/AppContext.tsx`, `src/AppRoot.tsx`, `src/services/timer.ts`, `src/components/FadeOverlay.tsx`, `src/utils/closeApp.ts`
+- Change weekly reflections: `src/services/reflection.ts`, `src/screens/reflection`, `src/database/reflections.ts`, `supabase/functions/weekly-reflection/index.ts`
+- Change notification behavior: `src/services/notifications.ts`, `src/hooks/useNotificationResponse.ts`, `src/AppRoot.tsx`
 - Change premium gating: `src/services/purchases.ts`, `src/hooks/useEntitlements.ts`, `src/screens/paywall/PaywallScreen.tsx`, `src/screens/reflection/ReflectionCardScreen.tsx`
-- Change settings/about links or public keys: `.env.example`, `app.config.ts`, `src/config/runtime.ts`, `src/screens/settings`
+- Change settings/about links or public keys: `.env.example`, `app.config.ts`, `src/config.ts`, `src/screens/settings`
+- Change cloud backup/restore: `src/services/cloudSync.ts`, `src/screens/settings/SettingsScreen.tsx`, `src/database/entries.ts`, `src/database/reflections.ts`, `supabase/functions/cloud-sync/index.ts`, `supabase/migrations/20240101000000_cloud_sync.sql`
+- Change RevenueCat webhook storage: `supabase/functions/revenuecat-webhook/index.ts`, `supabase/migrations/20240101000001_subscription_events.sql`
 - Change Expo startup or web preview: `package.json`, `scripts/repair-expo-bin.js`, `app.json`, `app.config.ts`
 
 ---
@@ -75,7 +77,7 @@ Core v1 implementation exists. The active phase is stabilization and launch prep
 - Sunday flow: reflection notification tap, cached reflection reuse, crisis-card routing
 - Daily repeat-entry rule: same-day reopen shows a done state and does not overwrite the stored entry
 - Monetization: premium entitlement refresh, paywall redirect after monthly free reflection
-- Settings: reminder changes, privacy-policy link, About screen version display
+- Settings: reminder changes, rollback-safe rescheduling, cloud backup/restore merge behavior, privacy-policy link, About screen version display
 
 ---
 
@@ -85,17 +87,17 @@ Core v1 implementation exists. The active phase is stabilization and launch prep
 |---|---|---|
 | Framework | React Native (Expo SDK 54) | Single codebase iOS + Android |
 | Language | TypeScript (strict) | `tsconfig` extends `expo/tsconfig.base` |
-| Local DB | expo-sqlite (~16 / Expo SDK 54) | All raw data stored on-device only. No cloud sync in v1. |
-| Backend | Supabase Edge Function | Single function `weekly-reflection`. Stateless. No Supabase DB tables. |
+| Local DB | expo-sqlite (~16 / Expo SDK 54) | All raw data is stored on-device first. Optional manual cloud backup mirrors entries and reflections when enabled. |
+| Backend | Supabase Edge Functions + SQL migrations | Functions: `weekly-reflection`, `cloud-sync`, `revenuecat-webhook`. Supabase tables back cloud sync and subscription event storage. |
 | AI | OpenAI GPT-4o mini | JSON mode enforced. ~$0.0001/call. Called server-side only. |
 | Push Notifications | expo-notifications | Local scheduled only. No server push. |
 | Payments | react-native-purchases (RevenueCat) | iOS + Android abstraction. Entitlement: `premium`. |
 | Crash Reporting | @sentry/react-native | No user ID. No session replay. Non-PII only. |
-| Runtime Config | `app.config.ts` + `src/config/runtime.ts` | Expo `extra` bridges `.env` values into the app safely. |
+| Runtime Config | `app.config.ts` + `src/config.ts` | Expo `extra` bridges `.env` values into the app safely. |
 | Navigation | @react-navigation/native-stack | All stacks. No tabs. No drawer. |
 | Animation | react-native-reanimated v4 | Used in BreathingAnimation, FadeOverlay |
 | State | React Context (AppContext) | No Redux/Zustand. Global: bootstrap state, premium state, onboarding state, timed-session state. |
-| Testing | jest-expo | 60 unit tests. 10 suites. All green. |
+| Testing | jest-expo | 67 unit tests. 12 suites. All green. |
 | Web Preview | react-dom + react-native-web | Browser preview supported on Mac via `npx expo start --web`. |
 | Build | EAS Build | eas.json: development / preview / production profiles |
 
@@ -119,7 +121,7 @@ ECHO/
 ├── scripts/repair-expo-bin.js       — Repairs the local Expo launcher after installs so `npx expo start` works reliably.
 │
 ├── src/
-│   ├── app/AppRoot.tsx              — NavigationContainer + AppProvider + notification routing.
+│   ├── AppRoot.tsx                  — NavigationContainer + AppProvider + notification routing.
 │   │
 │   ├── navigation/
 │   │   ├── RootNavigator.tsx        — Reads onboardingComplete, renders Onboarding or Main.
@@ -137,22 +139,27 @@ ECHO/
 │   │   └── settings/                — SettingsScreen, AboutScreen
 │   │
 │   ├── components/
+│   │   ├── AppScreen.tsx            — Shared safe-area, scroll, and keyboard-aware screen shell.
+│   │   ├── WordStep.tsx             — Shared word-entry UI used by onboarding + daily flow.
+│   │   ├── BreathingStep.tsx        — Shared breathing/skip UI used by onboarding + daily flow.
+│   │   ├── ReminderTimePicker.tsx   — Shared reminder time picker used by onboarding + settings.
 │   │   ├── EmojiCircle.tsx          — Tappable emoji circle with haptic feedback.
 │   │   ├── BreathingAnimation.tsx   — Reanimated expanding/contracting circle. 4s inhale/4s exhale.
 │   │   ├── WeatherAvatar.tsx        — Displays one of 9 weather emoji states.
 │   │   └── FadeOverlay.tsx          — Full-screen fade overlay. Used for 3-min cap close animation.
 │   │
-│   ├── db/
+│   ├── database/
 │   │   ├── database.ts              — initDatabase(), getSetting(), setSetting(). Called once on app launch.
-│   │   ├── entries.ts               — insertEntry(), getEntryByDate(), getEntriesForWeek(), hasEntryToday().
-│   │   └── reflections.ts           — insertReflection(), getReflectionForWeek(), getReflectionCountThisMonth().
+│   │   ├── entries.ts               — insertEntry(), getEntryByDate(), getEntriesForWeek(), hasEntryToday(), getAllEntries(), mergeEntries().
+│   │   └── reflections.ts           — insertReflection(), mergeReflection(), getReflectionForWeek(), getReflectionCountThisMonth().
 │   │
 │   ├── services/
 │   │   ├── timer.ts                 — startSessionTimer(). 180s hard cap. Returns clear() + getRemainingMs().
 │   │   ├── contentFilter.ts         — isContentSafe(). Case-insensitive scan of s1+s2+s3 for prohibited strings.
 │   │   ├── crisisDetector.ts        — isCrisis(). Checks response.crisis === true.
-│   │   ├── notifications.ts         — Scheduling + notification parsing helpers, including week-start fallback.
-│   │   ├── reflection.ts            — buildPayload(), fetchReflection() (3 retries, 15s timeout), processReflection(), runtime AI response validation.
+│   │   ├── cloudSync.ts             — Manual backup/restore of entries + reflections through Supabase.
+│   │   ├── notifications.ts         — Scheduling + notification parsing helpers, including rollback-safe reminder replacement and week-start fallback.
+│   │   ├── reflection.ts            — buildPayload() with device locale, fetchReflection() (3 retries, 15s timeout), processReflection(), runtime AI response validation.
 │   │   └── purchases.ts             — initPurchases(), checkEntitlement(), getOfferings(), purchasePackage(), restorePurchases().
 │   │
 │   ├── hooks/
@@ -160,12 +167,11 @@ ECHO/
 │   │   ├── useEntitlements.ts       — Checks RevenueCat premium state. Refreshes on app foreground.
 │   │   └── useNotificationResponse.ts — Listens for notification taps. Dedupe + clear cold-start responses.
 │   │
-│   ├── store/
+│   ├── state/
 │   │   ├── AppContext.tsx           — AppProvider + useApp(). Bootstrap + timed session ownership.
 │   │   └── bootstrap.ts             — Critical-vs-soft app bootstrap orchestration.
 │   │
-│   ├── config/
-│   │   └── runtime.ts               — Normalized client runtime config + dev warnings for missing values.
+│   ├── config.ts                    — Normalized client runtime config + dev warnings for missing values.
 │   │
 │   ├── constants/
 │   │   ├── theme.ts                 — COLORS, FONT_SIZES, SPACING, BORDER_RADIUS. Dark navy base (#1a1a2e).
@@ -185,12 +191,17 @@ ECHO/
 │       ├── reflection.ts            — Reflection, AvatarKey (9-member union), AIPayload, AIResponse, VALID_AVATAR_KEYS.
 │       └── navigation.ts            — OnboardingStackParamList, MainStackParamList.
 │
-├── supabase/functions/weekly-reflection/index.ts  — Deno edge function. Rate limited (2 req/IP/hr).
+├── supabase/config.toml                         — Local Supabase service and function settings.
+├── supabase/migrations/20240101000000_cloud_sync.sql         — Cloud backup tables (`device_identities`, `synced_entries`, `synced_reflections`).
+├── supabase/migrations/20240101000001_subscription_events.sql — RevenueCat event + subscription state tables.
+├── supabase/functions/weekly-reflection/index.ts             — Deno edge function for AI reflection generation. Rate limited (2 req/IP/hr).
+├── supabase/functions/cloud-sync/index.ts                    — Deno edge function for anonymous device backup/restore.
+├── supabase/functions/revenuecat-webhook/index.ts            — Deno edge function for RevenueCat webhook ingestion with retry-safe failure responses.
 │
 ├── __tests__/
 │   ├── services/                    — contentFilter, crisisDetector, notifications, reflectionPayload, reflectionResponse, timer
-│   ├── db/                          — entries duplicate protection
-│   ├── store/                       — bootstrap behavior
+│   ├── database/                    — entries duplicate protection, restore merge helpers
+│   ├── state/                       — bootstrap behavior
 │   └── utils/                       — dateHelpers, validators
 │
 └── __mocks__/                       — Jest stubs: expo-sqlite, expo-notifications, expo-device,
@@ -303,6 +314,15 @@ Cold start handling: `Notifications.getLastNotificationResponseAsync()` is dedup
 
 ---
 
+## Cloud Backup
+
+- Cloud backup is optional and only appears when `EXPO_PUBLIC_SUPABASE_CLOUD_SYNC_URL` is configured.
+- `pushToCloud()` registers an anonymous `device_id`, then uploads entries and reflections to Supabase-managed backup tables.
+- `pullFromCloud()` merges remote entries/reflections into local SQLite and intentionally does not overwrite existing local days or weeks.
+- `deleteAllData()` clears local SQLite only. Cloud backup deletion is a separate service concern and is not wired into the current Settings UI.
+
+---
+
 ## Tooling Notes
 
 - `postinstall` runs `scripts/repair-expo-bin.js` so `npx expo start` keeps working when Expo CLI is nested under `expo/node_modules`.
@@ -363,13 +383,13 @@ Product IDs: `echo_premium_monthly`, `echo_premium_yearly`.
 | [README.md](README.md) | Setup, scripts, and top-level project map |
 | [ARCHITECT.md](ARCHITECT.md) | Single source of truth for rules, architecture, file routing, and QA |
 | [app.config.ts](app.config.ts) | Bridges `.env` values into Expo runtime config |
-| [src/config/runtime.ts](src/config/runtime.ts) | Normalizes client config and removes placeholder leakage |
+| [src/config.ts](src/config.ts) | Normalizes client config and removes placeholder leakage |
 | [src/services/timer.ts](src/services/timer.ts) | The 3-min hard cap — most critical non-negotiable constraint |
 | [src/services/reflection.ts](src/services/reflection.ts) | Full AI pipeline orchestration |
 | [src/services/contentFilter.ts](src/services/contentFilter.ts) | Safety layer — scans every AI output before display |
-| [src/db/database.ts](src/db/database.ts) | SQLite init + settings CRUD — foundation everything depends on |
-| [src/store/AppContext.tsx](src/store/AppContext.tsx) | Global state — DB init, premium state, session state |
-| [src/app/AppRoot.tsx](src/app/AppRoot.tsx) | Root provider + notification tap routing |
+| [src/database/database.ts](src/database/database.ts) | SQLite init + settings CRUD — foundation everything depends on |
+| [src/state/AppContext.tsx](src/state/AppContext.tsx) | Global state — DB init, premium state, session state |
+| [src/AppRoot.tsx](src/AppRoot.tsx) | Root provider + notification tap routing |
 | [src/navigation/RootNavigator.tsx](src/navigation/RootNavigator.tsx) | Onboarding vs Main branch |
 | [supabase/functions/weekly-reflection/index.ts](supabase/functions/weekly-reflection/index.ts) | Edge Function — only server-side code in the project |
 

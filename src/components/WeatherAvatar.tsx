@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { AvatarKey } from '../types/reflection';
 import { AVATAR_MAP } from '../constants/avatars';
 
@@ -12,21 +13,21 @@ export function WeatherAvatar({ avatarKey, size = 120 }: Props) {
   const config = AVATAR_MAP[avatarKey] ?? AVATAR_MAP.cloudy;
 
   return (
-    <View
+    <LinearGradient
+      colors={[config.gradientStart, config.gradientEnd]}
       style={[
         styles.container,
         {
           width: size,
           height: size,
           borderRadius: size / 2,
-          backgroundColor: config.gradientStart,
         },
       ]}
     >
       <Text style={[styles.emoji, { fontSize: size * 0.5 }]}>
         {config.emoji}
       </Text>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -34,6 +35,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
   },
   emoji: {
     textAlign: 'center',

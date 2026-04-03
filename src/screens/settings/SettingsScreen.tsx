@@ -1,32 +1,115 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
 import { getSetting, setSetting, deleteAllData } from '../../database/database';
 import { scheduleDailyReminder } from '../../services/notifications';
+import { pushToCloud, pullFromCloud } from '../../services/cloudSync';
+import { RUNTIME_CONFIG } from '../../config';
 import { useApp } from '../../state/AppContext';
+import { AppScreen } from '../../components/AppScreen';
+import { ReminderTimePicker } from '../../components/ReminderTimePicker';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Settings'>;
+const MINUTE_STEP = 5;
+const MINUTES_PER_DAY = 24 * 60;
+const MAX_HOUR = 23;
+const MAX_MINUTE = 59;
+
+function parseStoredTimePart(
+  value: string | null,
+  fallback: number,
+  maxValue: number,
+): number {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > maxValue) {
+    return fallback;
+  }
+
+  return parsed;
+}
 
 export function SettingsScreen({ navigation }: Props) {
   const { isPremium } = useApp();
   const [hour, setHour] = useState(21);
-  const [minute] = useState(0);
+  const [minute, setMinute] = useState(0);
+  const [isLoadingReminderTime, setIsLoadingReminderTime] = useState(true);
+  const [isSavingReminderTime, setIsSavingReminderTime] = useState(false);
+  const [busyAction, setBusyAction] = useState<'backup' | 'restore' | 'delete' | null>(null);
+  const syncEnabled = !!RUNTIME_CONFIG.supabaseCloudSyncUrl;
+  const isBusy = busyAction !== null;
+  const isInteractionLocked = isBusy || isSavingReminderTime;
+  const isReminderDisabled = isLoadingReminderTime || isInteractionLocked;
 
   useEffect(() => {
     async function loadTime() {
-      const h = await getSetting('reminder_hour');
-      if (h) setHour(parseInt(h, 10));
+      try {
+        const [savedHour, savedMinute] = await Promise.all([
+          getSetting('reminder_hour'),
+          getSetting('reminder_minute'),
+        ]);
+
+        setHour(parseStoredTimePart(savedHour, 21, MAX_HOUR));
+        setMinute(parseStoredTimePart(savedMinute, 0, MAX_MINUTE));
+      } finally {
+        setIsLoadingReminderTime(false);
+      }
     }
-    loadTime();
+
+    void loadTime();
   }, []);
 
-  const formatTime = (h: number, m: number) => {
-    const period = h >= 12 ? 'PM' : 'AM';
-    const displayHour = h % 12 || 12;
-    return `${displayHour}:${String(m).padStart(2, '0')} ${period}`;
+  const handleBackup = async () => {
+    setBusyAction('backup');
+    try {
+      await pushToCloud();
+      Alert.alert(COPY.sync.backupSuccess);
+    } catch {
+      Alert.alert(COPY.sync.backupError);
+    } finally {
+      setBusyAction(null);
+    }
+  };
+
+  const handleRestore = () => {
+    Alert.alert(
+      COPY.sync.confirmRestoreTitle,
+      COPY.sync.confirmRestoreMessage,
+      [
+        { text: COPY.settings.cancel, style: 'cancel' },
+        {
+          text: COPY.sync.confirmRestoreButton,
+          onPress: async () => {
+            setBusyAction('restore');
+            try {
+              await pullFromCloud();
+              Alert.alert(COPY.sync.restoreSuccess);
+            } catch (err) {
+              const message =
+                err instanceof Error && err.message.includes('No backup')
+                  ? COPY.sync.noBackupError
+                  : COPY.sync.restoreError;
+              Alert.alert(message);
+            } finally {
+              setBusyAction(null);
+            }
+          },
+        },
+      ],
+    );
   };
 
   const handleDeleteAll = () => {
@@ -38,64 +121,180 @@ export function SettingsScreen({ navigation }: Props) {
         {
           text: COPY.settings.deleteAllConfirmButton,
           style: 'destructive',
-          onPress: () => void deleteAllData(),
+          onPress: async () => {
+            setBusyAction('delete');
+            try {
+              await deleteAllData();
+              Alert.alert(COPY.settings.deleteAllSuccess);
+            } catch {
+              Alert.alert(COPY.settings.deleteAllError);
+            } finally {
+              setBusyAction(null);
+            }
+          },
         },
       ],
     );
   };
 
+  const saveReminderTime = async (totalMinutes: number) => {
+    if (isReminderDisabled) {
+      return;
+    }
+
+    const normalized =
+      ((totalMinutes % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+    const newHour = Math.floor(normalized / 60);
+    const newMinute = normalized % 60;
+
+    setIsSavingReminderTime(true);
+
+    try {
+      await Promise.all([
+        setSetting('reminder_hour', String(newHour)),
+        setSetting('reminder_minute', String(newMinute)),
+      ]);
+      await scheduleDailyReminder(newHour, newMinute);
+      setHour(newHour);
+      setMinute(newMinute);
+    } catch {
+      await Promise.all([
+        setSetting('reminder_hour', String(hour)),
+        setSetting('reminder_minute', String(minute)),
+      ]).catch((rollbackError) => {
+        console.error('Failed to roll back reminder settings:', rollbackError);
+      });
+      Alert.alert(COPY.settings.reminderSaveError);
+    } finally {
+      setIsSavingReminderTime(false);
+    }
+  };
+
   const adjustHour = async (delta: number) => {
-    const newHour = (hour + delta + 24) % 24;
-    setHour(newHour);
-    await setSetting('reminder_hour', String(newHour));
-    await scheduleDailyReminder(newHour, minute);
+    await saveReminderTime(hour * 60 + minute + delta * 60);
+  };
+
+  const adjustMinute = async (delta: number) => {
+    await saveReminderTime(hour * 60 + minute + delta * MINUTE_STEP);
   };
 
   return (
-    <View style={styles.container}>
+    <AppScreen scroll contentContainerStyle={styles.container}>
       <Text style={styles.title}>{COPY.settings.title}</Text>
 
       <View style={styles.section}>
-        <Text style={styles.label}>{COPY.settings.reminderTime}</Text>
-        <View style={styles.timeRow}>
-          <TouchableOpacity onPress={() => adjustHour(-1)} style={styles.arrowBtn}>
-            <Text style={styles.arrow}>-</Text>
-          </TouchableOpacity>
-          <Text style={styles.timeText}>{formatTime(hour, minute)}</Text>
-          <TouchableOpacity onPress={() => adjustHour(1)} style={styles.arrowBtn}>
-            <Text style={styles.arrow}>+</Text>
-          </TouchableOpacity>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.label}>{COPY.settings.reminderTime}</Text>
+          {isLoadingReminderTime || isSavingReminderTime ? (
+            <ActivityIndicator size="small" color={COLORS.accent} />
+          ) : null}
         </View>
+        <ReminderTimePicker
+          hour={hour}
+          minute={minute}
+          disabled={isReminderDisabled}
+          onAdjustHour={(delta) => void adjustHour(delta)}
+          onAdjustMinute={(delta) => void adjustMinute(delta)}
+        />
       </View>
 
       <TouchableOpacity
-        style={styles.row}
+        style={[styles.row, isInteractionLocked && styles.rowDisabled]}
         onPress={() => navigation.navigate('Paywall', { source: 'settings' })}
+        disabled={isInteractionLocked}
+        accessibilityRole="button"
+        accessibilityLabel={COPY.settings.manageSubscription}
+        accessibilityHint="Opens subscription management"
+        accessibilityState={{ disabled: isInteractionLocked }}
       >
         <Text style={styles.rowText}>{COPY.settings.manageSubscription}</Text>
-        <Text style={styles.rowValue}>{isPremium ? 'Premium' : 'Free'}</Text>
+        <Text style={styles.rowValue}>
+          {isPremium ? COPY.settings.premiumStatus : COPY.settings.freeStatus}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.row}
+        style={[styles.row, isInteractionLocked && styles.rowDisabled]}
         onPress={() => navigation.navigate('About')}
+        disabled={isInteractionLocked}
+        accessibilityRole="button"
+        accessibilityLabel={COPY.settings.about}
+        accessibilityHint="Opens app information and privacy policy"
+        accessibilityState={{ disabled: isInteractionLocked }}
       >
         <Text style={styles.rowText}>{COPY.settings.about}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.row, styles.destructiveRow]} onPress={handleDeleteAll}>
+      {syncEnabled && (
+        <>
+          <TouchableOpacity
+            style={[styles.row, isInteractionLocked && styles.rowDisabled]}
+            onPress={() => void handleBackup()}
+            disabled={isInteractionLocked}
+            accessibilityRole="button"
+            accessibilityLabel={COPY.sync.backupTitle}
+            accessibilityHint="Saves your local data to the cloud"
+            accessibilityState={{ disabled: isInteractionLocked, busy: busyAction === 'backup' }}
+          >
+            <View>
+              <Text style={styles.rowText}>{COPY.sync.backupTitle}</Text>
+              <Text style={styles.rowSubtext}>
+                {busyAction === 'backup' ? COPY.sync.backingUp : COPY.sync.backupSubtitle}
+              </Text>
+            </View>
+            {busyAction === 'backup' ? (
+              <ActivityIndicator size="small" color={COLORS.accent} />
+            ) : (
+              <Text style={styles.rowValue}>{COPY.settings.arrow}</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.row, isInteractionLocked && styles.rowDisabled]}
+            onPress={handleRestore}
+            disabled={isInteractionLocked}
+            accessibilityRole="button"
+            accessibilityLabel={COPY.sync.restoreTitle}
+            accessibilityHint="Loads your backed up data from the cloud"
+            accessibilityState={{ disabled: isInteractionLocked, busy: busyAction === 'restore' }}
+          >
+            <View>
+              <Text style={styles.rowText}>{COPY.sync.restoreTitle}</Text>
+              <Text style={styles.rowSubtext}>
+                {busyAction === 'restore' ? COPY.sync.restoring : COPY.sync.restoreSubtitle}
+              </Text>
+            </View>
+            {busyAction === 'restore' ? (
+              <ActivityIndicator size="small" color={COLORS.accent} />
+            ) : (
+              <Text style={styles.rowValue}>{COPY.settings.arrow}</Text>
+            )}
+          </TouchableOpacity>
+        </>
+      )}
+
+      <TouchableOpacity
+        style={[styles.row, styles.destructiveRow, isInteractionLocked && styles.rowDisabled]}
+        onPress={handleDeleteAll}
+        disabled={isInteractionLocked}
+        accessibilityRole="button"
+        accessibilityLabel={COPY.settings.deleteAllData}
+        accessibilityHint="Permanently deletes all local check-ins and reflections"
+        accessibilityState={{ disabled: isInteractionLocked, busy: busyAction === 'delete' }}
+      >
         <Text style={styles.destructiveText}>{COPY.settings.deleteAllData}</Text>
+        {busyAction === 'delete' ? (
+          <ActivityIndicator size="small" color={COLORS.danger} />
+        ) : null}
       </TouchableOpacity>
-    </View>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    paddingHorizontal: SPACING.xl,
-    paddingTop: SPACING.xxxl,
+    paddingTop: SPACING.xxl,
+    paddingBottom: SPACING.xxxl,
   },
   title: {
     fontSize: FONT_SIZES.xl,
@@ -106,34 +305,16 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: SPACING.xl,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.sm,
+  },
   label: {
     fontSize: FONT_SIZES.sm,
     color: COLORS.muted,
-    marginBottom: SPACING.sm,
     textTransform: 'uppercase',
-  },
-  timeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.md,
-  },
-  arrowBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.surfaceLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  arrow: {
-    fontSize: FONT_SIZES.lg,
-    color: COLORS.primary,
-    fontWeight: '600',
-  },
-  timeText: {
-    fontSize: FONT_SIZES.xl,
-    color: COLORS.primary,
-    fontWeight: '600',
   },
   row: {
     backgroundColor: COLORS.surface,
@@ -151,6 +332,14 @@ const styles = StyleSheet.create({
   rowValue: {
     fontSize: FONT_SIZES.sm,
     color: COLORS.muted,
+  },
+  rowSubtext: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.muted,
+    marginTop: 2,
+  },
+  rowDisabled: {
+    opacity: 0.5,
   },
   destructiveRow: {
     marginTop: SPACING.xl,

@@ -28,6 +28,13 @@ const VALID_AVATARS = new Set([
   'rainy', 'stormy', 'foggy', 'clearing', 'moonlit',
 ]);
 
+// Sanitize user-submitted word before it reaches the AI prompt
+function sanitizeWord(word: unknown): string {
+  if (typeof word !== 'string') return '';
+  // Allow letters, numbers, spaces, apostrophes, hyphens only
+  return word.replace(/[^a-zA-Z0-9 '\-]/g, '').trim().slice(0, 20);
+}
+
 function parseAIResponse(input: unknown) {
   if (!input || typeof input !== 'object') {
     throw new Error('Malformed AI response');
@@ -71,26 +78,40 @@ interface AIPayload {
   user_locale: string;
 }
 
-// Simple in-memory rate limiting
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(ip: string): boolean {
+// Persistent rate limiting via Deno KV (survives cold starts, unlike in-memory Map)
+async function checkRateLimit(ip: string): Promise<boolean> {
+  const kv = await Deno.openKv();
+  const key = ['rate_limit', ip];
   const now = Date.now();
-  const entry = rateLimitMap.get(ip);
+  const resetAt = now + 3_600_000; // 1 hour window
 
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + 3600_000 });
+  const existing = await kv.get<{ count: number; resetAt: number }>(key);
+
+  if (!existing.value || now > existing.value.resetAt) {
+    await kv.set(key, { count: 1, resetAt }, { expireIn: 3_600_000 });
     return true;
   }
 
-  if (entry.count >= 2) return false;
+  if (existing.value.count >= 2) return false;
 
-  entry.count++;
+  await kv.set(
+    key,
+    { count: existing.value.count + 1, resetAt: existing.value.resetAt },
+    { expireIn: existing.value.resetAt - now },
+  );
   return true;
 }
 
 Deno.serve(async (req: Request) => {
-  // CORS
+  // Health check
+  if (req.method === 'GET') {
+    return new Response(
+      JSON.stringify({ status: 'ok', function: 'weekly-reflection', ts: new Date().toISOString() }),
+      { headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
+  // CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       headers: {
@@ -108,9 +129,9 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  // Rate limit
+  // Rate limit (persistent across cold starts)
   const ip = req.headers.get('x-forwarded-for') ?? 'unknown';
-  if (!checkRateLimit(ip)) {
+  if (!(await checkRateLimit(ip))) {
     return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
       status: 429,
       headers: { 'Content-Type': 'application/json' },
@@ -137,6 +158,12 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    // Sanitize user words before they reach the AI prompt
+    const sanitizedPayload = {
+      ...payload,
+      entries: payload.entries.map((e) => ({ ...e, word: sanitizeWord(e.word) })),
+    };
+
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
       return new Response(JSON.stringify({ error: 'Server configuration error' }), {
@@ -156,7 +183,7 @@ Deno.serve(async (req: Request) => {
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: JSON.stringify(payload) },
+          { role: 'user', content: JSON.stringify(sanitizedPayload) },
         ],
         temperature: 0.7,
         max_tokens: 300,

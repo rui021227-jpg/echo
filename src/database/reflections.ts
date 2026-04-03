@@ -32,8 +32,23 @@ export async function insertReflection(
   s3: string,
   avatarKey: AvatarKey,
   isCrisis: boolean,
+  createdAt?: string,
 ): Promise<void> {
   const db = getDatabase();
+  if (createdAt) {
+    await db.runAsync(
+      'INSERT OR REPLACE INTO reflections (week_start, s1, s2, s3, avatar_key, is_crisis, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      weekStart,
+      s1,
+      s2,
+      s3,
+      avatarKey,
+      isCrisis ? 1 : 0,
+      createdAt,
+    );
+    return;
+  }
+
   await db.runAsync(
     'INSERT OR REPLACE INTO reflections (week_start, s1, s2, s3, avatar_key, is_crisis) VALUES (?, ?, ?, ?, ?, ?)',
     weekStart,
@@ -43,6 +58,30 @@ export async function insertReflection(
     avatarKey,
     isCrisis ? 1 : 0,
   );
+}
+
+export async function mergeReflection(
+  weekStart: string,
+  s1: string,
+  s2: string,
+  s3: string,
+  avatarKey: AvatarKey,
+  isCrisis: boolean,
+  createdAt: string,
+): Promise<boolean> {
+  const db = getDatabase();
+  const result = await db.runAsync(
+    'INSERT OR IGNORE INTO reflections (week_start, s1, s2, s3, avatar_key, is_crisis, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    weekStart,
+    s1,
+    s2,
+    s3,
+    avatarKey,
+    isCrisis ? 1 : 0,
+    createdAt,
+  );
+
+  return result.changes > 0;
 }
 
 export async function getReflectionForWeek(
@@ -64,13 +103,20 @@ export async function getLatestReflection(): Promise<Reflection | null> {
   return row ? mapRow(row) : null;
 }
 
-export async function getReflectionCountThisMonth(): Promise<number> {
+export async function getAllReflections(): Promise<Reflection[]> {
   const db = getDatabase();
-  const now = new Date();
-  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+  const rows = await db.getAllAsync<ReflectionRow>(
+    'SELECT * FROM reflections ORDER BY week_start ASC',
+  );
+  return rows.map(mapRow);
+}
+
+export async function getReflectionCountThisMonth(now: Date = new Date()): Promise<number> {
+  const db = getDatabase();
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   const row = await db.getFirstAsync<{ count: number }>(
-    'SELECT COUNT(*) as count FROM reflections WHERE week_start >= ?',
-    monthStart,
+    'SELECT COUNT(*) as count FROM reflections WHERE substr(created_at, 1, 7) = ?',
+    monthKey,
   );
   return row?.count ?? 0;
 }

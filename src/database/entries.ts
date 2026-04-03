@@ -88,3 +88,57 @@ export async function hasEntryToday(): Promise<boolean> {
   const entry = await getEntryByDate(todayISO());
   return entry !== null;
 }
+
+export async function getAllEntries(): Promise<Entry[]> {
+  const db = getDatabase();
+  const rows = await db.getAllAsync<{
+    id: number;
+    date: string;
+    emoji_score: number;
+    word: string;
+    breath_taken: number;
+    created_at: string;
+  }>('SELECT * FROM entries ORDER BY date ASC');
+
+  return rows.map((row) => ({
+    id: row.id,
+    date: row.date,
+    emoji_score: row.emoji_score as EmojiScore,
+    word: row.word,
+    breath_taken: row.breath_taken === 1,
+    created_at: row.created_at,
+  }));
+}
+
+export async function upsertEntries(entries: Entry[]): Promise<void> {
+  const db = getDatabase();
+  for (const e of entries) {
+    await db.runAsync(
+      'INSERT OR REPLACE INTO entries (date, emoji_score, word, breath_taken, created_at) VALUES (?, ?, ?, ?, ?)',
+      e.date,
+      e.emoji_score,
+      e.word,
+      e.breath_taken ? 1 : 0,
+      e.created_at,
+    );
+  }
+}
+
+export async function mergeEntries(entries: Entry[]): Promise<number> {
+  const db = getDatabase();
+  let inserted = 0;
+
+  for (const e of entries) {
+    const result = await db.runAsync(
+      'INSERT OR IGNORE INTO entries (date, emoji_score, word, breath_taken, created_at) VALUES (?, ?, ?, ?, ?)',
+      e.date,
+      e.emoji_score,
+      e.word,
+      e.breath_taken ? 1 : 0,
+      e.created_at,
+    );
+    inserted += result.changes;
+  }
+
+  return inserted;
+}

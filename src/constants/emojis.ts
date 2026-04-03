@@ -3,13 +3,13 @@ import type { EmojiScore } from '../types/entry';
 export interface EmojiOption {
   score: EmojiScore;
   emoji: string;
-  color: string;
+  colors: readonly [string, string];
 }
 
 export const EMOJI_SCALE: EmojiOption[] = [
-  { score: 1, emoji: '😔', color: '#4a4a6a' },
-  { score: 2, emoji: '😕', color: '#6a6a8a' },
-  { score: 3, emoji: '😐', color: '#8a8aaa' },
-  { score: 4, emoji: '🙂', color: '#aaaacc' },
-  { score: 5, emoji: '😊', color: '#ccccee' },
+  { score: 1, emoji: '😔', colors: ['#2A2A40', '#4A4A6A'] },
+  { score: 2, emoji: '😕', colors: ['#3A3A55', '#6A6A8A'] },
+  { score: 3, emoji: '😐', colors: ['#4A4A6A', '#8A8AAA'] },
+  { score: 4, emoji: '🙂', colors: ['#5A5A80', '#AAAACC'] },
+  { score: 5, emoji: '😊', colors: ['#6C6CA5', '#CCCCEE'] },
 ];

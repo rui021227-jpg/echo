@@ -13,6 +13,7 @@ import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../constants/them
 import { COPY } from '../../constants/copy';
 import { getOfferings, purchasePackage, restorePurchases } from '../../services/purchases';
 import { useApp } from '../../state/AppContext';
+import { AppScreen } from '../../components/AppScreen';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Paywall'>;
 
@@ -84,9 +85,9 @@ export function PaywallScreen({ navigation, route }: Props) {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <AppScreen centered contentContainerStyle={styles.loadingContainer}>
         <ActivityIndicator color={COLORS.accent} size="large" />
-      </View>
+      </AppScreen>
     );
   }
 
@@ -98,7 +99,7 @@ export function PaywallScreen({ navigation, route }: Props) {
   );
 
   return (
-    <View style={styles.container}>
+    <AppScreen scroll contentContainerStyle={styles.container}>
       <Text style={styles.title}>{COPY.paywall.title}</Text>
 
       <View style={styles.features}>
@@ -151,17 +152,21 @@ export function PaywallScreen({ navigation, route }: Props) {
       >
         <Text style={styles.closeText}>{COPY.paywall.maybeLater}</Text>
       </TouchableOpacity>
-    </View>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.xxxl,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: FONT_SIZES.xl,

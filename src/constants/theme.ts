@@ -12,6 +12,14 @@ export const COLORS = {
   success: '#2ecc71',
 } as const;
 
+export const GRADIENTS = {
+  primary: ['#1f2f50', '#2a3b66'] as const,
+  accent: ['#6e71c9', '#8f93ea'] as const,
+  glow: ['rgba(123, 127, 218, 0.2)', 'rgba(123, 127, 218, 0.05)'] as const,
+  dark: ['#1a1a2e', '#16213e'] as const,
+  glass: ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.02)'] as const,
+} as const;
+
 export const FONT_SIZES = {
   xs: 12,
   sm: 14,
@@ -44,16 +52,16 @@ export const BORDER_RADIUS = {
 export const SHADOWS = {
   card: {
     shadowColor: '#7b7fda',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 6,
   },
   glow: {
-    shadowColor: '#7b7fda',
+    shadowColor: '#8f93ea',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
     elevation: 8,
   },
   soft: {

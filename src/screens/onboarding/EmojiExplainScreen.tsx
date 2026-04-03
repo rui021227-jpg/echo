@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { OnboardingStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
@@ -14,12 +15,15 @@ export function EmojiExplainScreen({ navigation }: Props) {
       <View style={styles.content}>
         <View style={styles.emojiRow}>
           {EMOJI_SCALE.map((e) => (
-            <View
+            <LinearGradient
               key={e.score}
-              style={[styles.emojiCircle, { backgroundColor: e.color }]}
+              style={styles.emojiCircle}
+              colors={e.colors}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
             >
               <Text style={styles.emoji}>{e.emoji}</Text>
-            </View>
+            </LinearGradient>
           ))}
         </View>
         <Text style={styles.explain}>{COPY.onboarding.emojiExplain}</Text>
@@ -29,7 +33,7 @@ export function EmojiExplainScreen({ navigation }: Props) {
         style={styles.button}
         onPress={() => navigation.navigate('NotificationPermission')}
       >
-        <Text style={styles.buttonText}>Next</Text>
+        <Text style={styles.buttonText}>{COPY.common.next}</Text>
       </TouchableOpacity>
     </View>
   );

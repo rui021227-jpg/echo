@@ -3,6 +3,11 @@ export const COPY = {
   appName: 'ECHO',
   tagline: 'Emoji. Word. Breath. Done.',
 
+  // Shared labels
+  common: {
+    next: 'Next',
+  },
+
   // Onboarding
   onboarding: {
     getStarted: 'Get started',
@@ -13,6 +18,7 @@ export const COPY = {
     notificationSkip: 'You can enable this later in Settings.',
     reminderTitle: 'We\u2019ll come to you.',
     setReminder: 'Set reminder',
+    reminderError: 'We could not save that reminder.',
     completionMessage: 'You\u2019re all set \u2728',
     completionSubtitle: 'See you tomorrow.',
   },
@@ -74,7 +80,12 @@ export const COPY = {
   settings: {
     title: 'Settings',
     reminderTime: 'Reminder time',
+    reminderSaveError: 'We could not update your reminder.',
+    hourLabel: 'Hour',
+    minuteLabel: 'Minute',
     manageSubscription: 'Manage subscription',
+    premiumStatus: 'Premium',
+    freeStatus: 'Free',
     about: 'About',
     privacyPolicy: 'Privacy policy',
     sectionReminder: 'Daily reminder',
@@ -85,7 +96,27 @@ export const COPY = {
     deleteAllConfirmTitle: 'Delete all data?',
     deleteAllConfirmMessage: 'This will permanently delete all your check-ins and reflections. This cannot be undone.',
     deleteAllConfirmButton: 'Delete',
+    deleteAllSuccess: 'All local check-ins and reflections were deleted.',
+    deleteAllError: 'We could not delete your local data. Please try again.',
     cancel: 'Cancel',
+  },
+
+  // Cloud sync
+  sync: {
+    backupTitle: 'Back up data',
+    backupSubtitle: 'Save to cloud',
+    restoreTitle: 'Restore data',
+    restoreSubtitle: 'Load from cloud',
+    backingUp: 'Backing up\u2026',
+    restoring: 'Restoring\u2026',
+    backupSuccess: 'Backup complete',
+    restoreSuccess: 'Restore complete',
+    backupError: 'Backup failed. Please try again.',
+    restoreError: 'Restore failed. Check your connection and try again.',
+    noBackupError: 'No backup found. Back up your data first.',
+    confirmRestoreTitle: 'Restore from cloud?',
+    confirmRestoreMessage: 'This will merge cloud data with your current data. Existing entries will not be overwritten.',
+    confirmRestoreButton: 'Restore',
   },
 
   // About

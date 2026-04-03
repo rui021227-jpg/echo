@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { COLORS, SPACING, BORDER_RADIUS, BORDERS, SHADOWS } from '../constants/theme';
+import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SPACING, BORDER_RADIUS, SHADOWS, GRADIENTS } from '../constants/theme';
 
 interface Props {
   children: React.ReactNode;
@@ -14,20 +15,25 @@ export const GlassCard = ({ children, style, glow = false, bordered = false }: P
   const borderStyle = bordered ? styles.bordered : null;
 
   return (
-    <View style={[styles.card, shadowStyle, borderStyle, style]}>
+    <LinearGradient
+      colors={GRADIENTS.glass}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={[styles.card, shadowStyle, borderStyle, style]}
+    >
       {children}
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: 'rgba(22, 33, 62, 0.7)',
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.lg,
   },
   bordered: {
-    borderWidth: BORDERS.card.borderWidth,
-    borderColor: BORDERS.card.borderColor,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
 });

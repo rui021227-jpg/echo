@@ -1,53 +1,95 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { OnboardingStackParamList } from '../../types/navigation';
 import { COLORS, FONT_SIZES, SPACING } from '../../constants/theme';
 import { COPY } from '../../constants/copy';
 import { scheduleDailyReminder, scheduleSundayReflection } from '../../services/notifications';
-import { setSetting } from '../../database/database';
+import { getSetting, setSetting } from '../../database/database';
+import { ReminderTimePicker } from '../../components/ReminderTimePicker';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'ReminderTime'>;
+const MINUTE_STEP = 5;
+const MINUTES_PER_DAY = 24 * 60;
 
 export function ReminderTimeScreen({ navigation }: Props) {
   const [hour, setHour] = useState(21);
-  const [minute] = useState(0);
+  const [minute, setMinute] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const formatTime = (h: number, m: number) => {
-    const period = h >= 12 ? 'PM' : 'AM';
-    const displayHour = h % 12 || 12;
-    return `${displayHour}:${String(m).padStart(2, '0')} ${period}`;
+  const updateLocalTime = (totalMinutes: number) => {
+    const normalized = ((totalMinutes % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+    setHour(Math.floor(normalized / 60));
+    setMinute(normalized % 60);
   };
 
   const adjustHour = (delta: number) => {
-    setHour((prev) => ((prev + delta + 24) % 24));
+    updateLocalTime(hour * 60 + minute + delta * 60);
+  };
+
+  const adjustMinute = (delta: number) => {
+    updateLocalTime(hour * 60 + minute + delta * MINUTE_STEP);
   };
 
   const handleSet = async () => {
-    await setSetting('reminder_hour', String(hour));
-    await setSetting('reminder_minute', String(minute));
-    await scheduleDailyReminder(hour, minute);
-    await scheduleSundayReflection();
-    navigation.navigate('OnboardingEmojiPicker');
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    let previousHour: string | null = null;
+    let previousMinute: string | null = null;
+
+    try {
+      [previousHour, previousMinute] = await Promise.all([
+        getSetting('reminder_hour'),
+        getSetting('reminder_minute'),
+      ]);
+
+      await Promise.all([
+        setSetting('reminder_hour', String(hour)),
+        setSetting('reminder_minute', String(minute)),
+      ]);
+      await scheduleDailyReminder(hour, minute);
+      await scheduleSundayReflection();
+      navigation.navigate('OnboardingEmojiPicker');
+    } catch {
+      await Promise.all([
+        setSetting('reminder_hour', previousHour ?? '21'),
+        setSetting('reminder_minute', previousMinute ?? '0'),
+      ])
+        .catch((rollbackError) => {
+          console.error('Failed to roll back onboarding reminder settings:', rollbackError);
+        });
+      Alert.alert(COPY.onboarding.reminderError);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.timePickerRow}>
-          <TouchableOpacity onPress={() => adjustHour(-1)} style={styles.arrowBtn}>
-            <Text style={styles.arrow}>-</Text>
-          </TouchableOpacity>
-          <Text style={styles.time}>{formatTime(hour, minute)}</Text>
-          <TouchableOpacity onPress={() => adjustHour(1)} style={styles.arrowBtn}>
-            <Text style={styles.arrow}>+</Text>
-          </TouchableOpacity>
-        </View>
+        <ReminderTimePicker
+          hour={hour}
+          minute={minute}
+          onAdjustHour={adjustHour}
+          onAdjustMinute={adjustMinute}
+          disabled={isSaving}
+        />
         <Text style={styles.subtitle}>{COPY.onboarding.reminderTitle}</Text>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSet}>
-        <Text style={styles.buttonText}>{COPY.onboarding.setReminder}</Text>
+      <TouchableOpacity
+        style={[styles.button, isSaving && styles.buttonDisabled]}
+        onPress={handleSet}
+        disabled={isSaving}
+      >
+        {isSaving ? (
+          <ActivityIndicator color={COLORS.white} size="small" />
+        ) : (
+          <Text style={styles.buttonText}>{COPY.onboarding.setReminder}</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -64,42 +106,22 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  timePickerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.lg,
-    marginBottom: SPACING.lg,
-  },
-  arrowBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.surfaceLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  arrow: {
-    fontSize: FONT_SIZES.xl,
-    color: COLORS.primary,
-    fontWeight: '600',
-  },
-  time: {
-    fontSize: FONT_SIZES.xxxl,
-    fontWeight: '600',
-    color: COLORS.primary,
+    width: '100%',
   },
   subtitle: {
     fontSize: FONT_SIZES.lg,
     color: COLORS.secondary,
     textAlign: 'center',
+    marginTop: SPACING.xl,
   },
   button: {
     backgroundColor: COLORS.accent,
     paddingVertical: SPACING.md,
     borderRadius: 12,
     alignItems: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     fontSize: FONT_SIZES.lg,

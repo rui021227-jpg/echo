@@ -23,6 +23,7 @@ Client-visible runtime config is loaded from `.env` through `app.config.ts` and 
 Client runtime config:
 
 - `EXPO_PUBLIC_SUPABASE_EDGE_FUNCTION_URL`
+- `EXPO_PUBLIC_SUPABASE_CLOUD_SYNC_URL`
 - `EXPO_PUBLIC_REVENUECAT_IOS_KEY`
 - `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`
 - `EXPO_PUBLIC_PRIVACY_POLICY_URL`
@@ -38,6 +39,7 @@ Optional Sentry config:
 Server-only config:
 
 - `OPENAI_API_KEY` lives in the Supabase Edge Function environment, never in the client app.
+- `REVENUECAT_WEBHOOK_AUTH_TOKEN` lives in the Supabase Edge Function environment for `revenuecat-webhook`.
 - Do not add, paste, rotate, or use any API key unless the project owner explicitly approves it for that task.
 
 ## Scripts
@@ -73,10 +75,10 @@ ECHO/
 │   │   ├── paywall/         # Premium upgrade screen
 │   │   └── settings/        # Settings + About
 │   │
-│   ├── components/          # Reusable UI: EmojiCircle, BreathingAnimation, WeatherAvatar, FadeOverlay, GlassCard
+│   ├── components/          # Reusable UI: AppScreen, WordStep, BreathingStep, ReminderTimePicker, EmojiCircle, BreathingAnimation, WeatherAvatar, FadeOverlay, GlassCard
 │   ├── navigation/          # React Navigation stacks: Root, Main, Onboarding
 │   ├── state/               # Global state (AppContext) + bootstrap logic
-│   ├── services/            # Business logic: timer, notifications, reflection, purchases, content filter, crisis detector
+│   ├── services/            # Business logic: timer, notifications, cloud sync, reflection, purchases, content filter, crisis detector
 │   ├── database/            # SQLite: database setup, entries CRUD, reflections CRUD
 │   ├── hooks/               # Custom hooks: useTimer, useEntitlements, useNotificationResponse
 │   ├── constants/           # Static data: theme tokens, copy strings, emojis, avatars, crisis lines, prohibited words
@@ -84,8 +86,12 @@ ECHO/
 │   └── utils/               # Helpers: dateHelpers, validators, closeApp
 │
 ├── supabase/
+│   ├── config.toml             # Local Supabase services + Edge Function config
+│   ├── migrations/             # SQL schema for cloud sync + subscription event storage
 │   └── functions/
-│       └── weekly-reflection/  # Edge function: generates AI reflection from weekly entries
+│       ├── weekly-reflection/  # Edge function: generates AI reflection from weekly entries
+│       ├── cloud-sync/         # Edge function: device backup + restore for entries/reflections
+│       └── revenuecat-webhook/ # Edge function: stores RevenueCat subscription events
 │
 ├── assets/                  # App icon, splash, favicon
 ├── docs/                    # ARCHITECT.md, PRD, deployment guide, changelog
@@ -98,7 +104,7 @@ ECHO/
 
 - No home screen. The default route is the emoji picker.
 - The 3-minute cap is an architecture rule, not a setting.
-- Raw entries stay on device; only the anonymized weekly payload reaches the edge function.
+- Raw entries stay on device by default. Weekly reflections still send only an anonymized summary, and cloud backup only uploads entries/reflections when the user manually triggers it in Settings.
 - Free users get monthly reflections, premium users get weekly reflections.
 
 ## Tooling Notes

@@ -46,23 +46,48 @@ export async function registerForPushNotifications(): Promise<boolean> {
   return true;
 }
 
+async function replaceScheduledNotifications(
+  type: NotificationType,
+  requests: Array<Parameters<typeof Notifications.scheduleNotificationAsync>[0]>,
+): Promise<void> {
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  const existingIds = scheduled
+    .filter((notif) => notif.content.data?.type === type)
+    .map((notif) => notif.identifier);
+
+  const newIds: string[] = [];
+
+  try {
+    for (const request of requests) {
+      const identifier = await Notifications.scheduleNotificationAsync(request);
+      newIds.push(identifier);
+    }
+  } catch (error) {
+    await Promise.all(
+      newIds.map((identifier) =>
+        Notifications.cancelScheduledNotificationAsync(identifier),
+      ),
+    );
+    throw error;
+  }
+
+  await Promise.all(
+    existingIds.map((identifier) =>
+      Notifications.cancelScheduledNotificationAsync(identifier),
+    ),
+  );
+}
+
 export async function scheduleDailyReminder(
   hour: number,
   minute: number,
 ): Promise<void> {
-  // Cancel existing daily notifications
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  for (const notif of scheduled) {
-    if (notif.content.data?.type === 'daily') {
-      await Notifications.cancelScheduledNotificationAsync(notif.identifier);
-    }
-  }
-
-  // Schedule one for each day of the week with rotating copy
   const variants = COPY.notifications.dailyVariants;
-  for (let weekday = 1; weekday <= 7; weekday++) {
+  const requests: Array<Parameters<typeof Notifications.scheduleNotificationAsync>[0]> = [];
+
+  for (let weekday = 1; weekday <= 7; weekday += 1) {
     const variant = variants[(weekday - 1) % variants.length];
-    await Notifications.scheduleNotificationAsync({
+    requests.push({
       content: {
         title: COPY.appName,
         body: variant,
@@ -70,38 +95,34 @@ export async function scheduleDailyReminder(
         ...(Platform.OS === 'android' && { channelId: 'daily' }),
       },
       trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+        type: Notifications.SchedulableTriggerInputTypes.WEEKLY as const,
         weekday,
         hour,
         minute,
       },
     });
   }
+
+  await replaceScheduledNotifications('daily', requests);
 }
 
 export async function scheduleSundayReflection(): Promise<void> {
-  // Cancel existing Sunday notifications
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  for (const notif of scheduled) {
-    if (notif.content.data?.type === 'reflection') {
-      await Notifications.cancelScheduledNotificationAsync(notif.identifier);
-    }
-  }
-
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: COPY.appName,
-      body: COPY.notifications.sundayTitle,
-      data: { type: 'reflection' },
-      ...(Platform.OS === 'android' && { channelId: 'reflection' }),
+  await replaceScheduledNotifications('reflection', [
+    {
+      content: {
+        title: COPY.appName,
+        body: COPY.notifications.sundayTitle,
+        data: { type: 'reflection' },
+        ...(Platform.OS === 'android' && { channelId: 'reflection' }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.WEEKLY as const,
+        weekday: 1, // Sunday
+        hour: 9,
+        minute: 0,
+      },
     },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-      weekday: 1, // Sunday
-      hour: 9,
-      minute: 0,
-    },
-  });
+  ]);
 }
 
 export async function cancelAllNotifications(): Promise<void> {

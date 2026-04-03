@@ -12,7 +12,7 @@
 
 | Phase | Status | Notes |
 |---|---|---|
-| Phase 0: Scaffolding & Config | Complete | Expo app exists, docs exist, runtime config flows through `.env` -> `app.config.ts` -> `src/config/runtime.ts`, and local web preview works. |
+| Phase 0: Scaffolding & Config | Complete | Expo app exists, docs exist, runtime config flows through `.env` -> `app.config.ts` -> `src/config.ts`, and local web preview works. |
 | Phase 1: Database | Complete | SQLite schema and CRUD layer are in place. |
 | Phase 2: Types, Constants & Utilities | Complete | Core type system, copy/constants, and helpers exist. |
 | Phase 3: Services | Mostly complete | Timer, notifications, reflection, purchases, config guards, and AI response validation exist; production keys still need to be set. |
@@ -58,7 +58,7 @@ ECHO/
 ├── scripts/repair-expo-bin.js       # Keeps npx expo start working after installs
 ├── supabase/functions/weekly-reflection/index.ts
 ├── src/
-│   ├── app/AppRoot.tsx              # Navigation + providers wrapper
+│   ├── AppRoot.tsx                  # Navigation + providers wrapper
 │   ├── navigation/
 │   │   ├── RootNavigator.tsx        # Onboarding vs Main
 │   │   ├── OnboardingNavigator.tsx  # 8-screen onboarding + first-entry flow
@@ -69,9 +69,9 @@ ECHO/
 │   │   ├── reflection/              # ReflectionCard, CrisisCard
 │   │   ├── paywall/PaywallScreen.tsx
 │   │   └── settings/               # Settings, About
-│   ├── components/                  # EmojiCircle, BreathingAnimation, ReflectionCard, WeatherAvatar, FadeOverlay, SafeText
-│   ├── config/                      # runtime.ts for normalized client config
-│   ├── db/
+│   ├── components/                  # AppScreen, WordStep, BreathingStep, ReminderTimePicker, EmojiCircle, BreathingAnimation, WeatherAvatar, FadeOverlay, GlassCard
+│   ├── config.ts                    # normalized client config
+│   ├── database/
 │   │   ├── database.ts             # SQLite init + migrations + settings CRUD
 │   │   ├── entries.ts              # Daily entry CRUD
 │   │   └── reflections.ts          # Weekly reflection CRUD
@@ -83,7 +83,7 @@ ECHO/
 │   │   ├── contentFilter.ts        # Prohibited string scanner
 │   │   └── crisisDetector.ts       # Crisis flag handler
 │   ├── hooks/                       # useDatabase, useTimer, useEntitlements, useNotificationResponse
-│   ├── store/AppContext.tsx         # React Context for global state
+│   ├── state/AppContext.tsx         # React Context for global state
 │   ├── constants/                   # emojis, avatars, copy, crisis, prohibited, theme
 │   ├── utils/                       # dateHelpers, closeApp, validators
 │   └── types/                       # entry, reflection, navigation param types
@@ -129,9 +129,9 @@ CREATE TABLE IF NOT EXISTS settings (
 ```
 
 ### Key Functions
-- `src/db/database.ts`: `initDatabase()`, `getSetting()`, `setSetting()`
-- `src/db/entries.ts`: `insertEntry()`, `getEntryByDate()`, `getEntriesForWeek()`, `hasEntryToday()`
-- `src/db/reflections.ts`: `insertReflection()`, `getReflectionForWeek()`, `getLatestReflection()`
+- `src/database/database.ts`: `initDatabase()`, `getSetting()`, `setSetting()`
+- `src/database/entries.ts`: `insertEntry()`, `getEntryByDate()`, `getEntriesForWeek()`, `hasEntryToday()`
+- `src/database/reflections.ts`: `insertReflection()`, `getReflectionForWeek()`, `getLatestReflection()`
 
 ---
 

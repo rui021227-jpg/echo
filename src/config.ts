@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 type RuntimeExtra = {
   sentryDsn?: string;
   supabaseEdgeFunctionUrl?: string;
+  supabaseCloudSyncUrl?: string;
   revenueCatIosKey?: string;
   revenueCatAndroidKey?: string;
   privacyPolicyUrl?: string;
@@ -27,6 +28,7 @@ const extra = (Constants.expoConfig?.extra ?? {}) as RuntimeExtra;
 export const RUNTIME_CONFIG = {
   sentryDsn: normalizeConfigValue(extra.sentryDsn),
   supabaseEdgeFunctionUrl: normalizeConfigValue(extra.supabaseEdgeFunctionUrl),
+  supabaseCloudSyncUrl: normalizeConfigValue(extra.supabaseCloudSyncUrl),
   revenueCatIosKey: normalizeConfigValue(extra.revenueCatIosKey),
   revenueCatAndroidKey: normalizeConfigValue(extra.revenueCatAndroidKey),
   privacyPolicyUrl: normalizeConfigValue(extra.privacyPolicyUrl),

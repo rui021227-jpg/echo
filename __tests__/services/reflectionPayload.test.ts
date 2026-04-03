@@ -1,3 +1,7 @@
+jest.mock('expo-localization', () => ({
+  getLocales: () => [{ languageTag: 'en-US' }],
+}));
+
 import { buildPayload } from '../../src/services/reflection';
 import type { Entry } from '../../src/types/entry';
 
@@ -23,6 +27,7 @@ describe('buildPayload', () => {
     expect(payload.week_start).toBe('2026-03-23');
     expect(payload.entry_count).toBe(2);
     expect(payload.emoji_scale).toBe('1=lowest 5=highest');
+    expect(payload.user_locale).toBe('en-US');
     expect(payload.entries).toHaveLength(2);
     expect(payload.entries[0]).toMatchObject({
       day: 'Mon',

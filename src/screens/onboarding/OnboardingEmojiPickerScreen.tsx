@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { OnboardingStackParamList } from '../../types/navigation';
 import { COLORS, SPACING } from '../../constants/theme';
@@ -10,7 +11,20 @@ import { todayISO } from '../../utils/dateHelpers';
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'OnboardingEmojiPicker'>;
 
 export function OnboardingEmojiPickerScreen({ navigation }: Props) {
+  const [isSelecting, setIsSelecting] = React.useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setIsSelecting(false);
+    }, []),
+  );
+
   const handlePress = (score: number) => {
+    if (isSelecting) {
+      return;
+    }
+
+    setIsSelecting(true);
     navigation.navigate('OnboardingWordInput', {
       emojiScore: score,
       date: todayISO(),

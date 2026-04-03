@@ -40,6 +40,7 @@ src/
 │
 │  ── UI BUILDING BLOCKS ─────────────────────────────────────
 ├── components/         Reusable UI pieces used across screens:
+│                         AppScreen, WordStep, BreathingStep, ReminderTimePicker,
 │                         EmojiCircle, BreathingAnimation, WeatherAvatar,
 │                         FadeOverlay, GlassCard
 │
@@ -57,8 +58,9 @@ src/
 │  ── LOGIC ──────────────────────────────────────────────────
 ├── services/           Business logic that screens call into:
 │                         timer.ts          — 3-minute session hard cap
-│                         notifications.ts  — daily + Sunday reminder scheduling
-│                         reflection.ts     — sends weekly data to Supabase, gets AI summary back
+│                         notifications.ts  — daily + Sunday reminder scheduling with safer replacement semantics
+│                         cloudSync.ts      — optional backup + restore of entries/reflections
+│                         reflection.ts     — sends locale-aware weekly data to Supabase, gets AI summary back
 │                         purchases.ts      — RevenueCat in-app purchase integration
 │                         contentFilter.ts  — screens AI output for prohibited content
 │                         crisisDetector.ts — detects if a reflection should show crisis resources
@@ -69,7 +71,7 @@ src/
 │                         useNotificationResponse — handles tapping a push notification
 │
 │  ── DATA ───────────────────────────────────────────────────
-├── database/           Local SQLite storage (stays on device):
+├── database/           Primary local SQLite storage (with optional manual cloud backup):
 │                         database.ts    — opens DB, creates tables, settings CRUD
 │                         entries.ts     — save/read daily mood check-ins
 │                         reflections.ts — save/read weekly AI reflections
@@ -104,13 +106,15 @@ src/
 
 ```
 supabase/
+├── config.toml         Local Supabase services + Edge Function config
+├── migrations/         SQL schema for cloud backup and subscription event storage
 └── functions/
-    └── weekly-reflection/
-        └── index.ts    Server-side Edge Function (runs on Supabase, not the user's phone):
-                          1. Receives anonymized weekly entries from the app
-                          2. Calls OpenAI to generate a 3-sentence reflection
-                          3. Returns the reflection + a weather avatar key
-                          Note: OPENAI_API_KEY lives here only — never in the app
+    ├── weekly-reflection/
+    │   └── index.ts    Receives anonymized weekly entries and returns the AI reflection card
+    ├── cloud-sync/
+    │   └── index.ts    Registers anonymous device IDs and handles backup/restore for entries/reflections
+    └── revenuecat-webhook/
+        └── index.ts    Stores RevenueCat subscription events and keeps subscription status in sync
 ```
 
 ---
@@ -141,8 +145,10 @@ supabase/
 | How screens link together | `src/navigation/` |
 | Daily 3-minute timer | `src/services/timer.ts` |
 | Push notifications | `src/services/notifications.ts` |
+| Cloud backup / restore | `src/services/cloudSync.ts` + `src/screens/settings/SettingsScreen.tsx` + `supabase/functions/cloud-sync/` |
 | AI reflection logic | `src/services/reflection.ts` + `supabase/functions/weekly-reflection/` |
 | Paywall / purchases | `src/services/purchases.ts` + `src/screens/paywall/` |
+| RevenueCat webhook persistence | `supabase/functions/revenuecat-webhook/` + `supabase/migrations/` |
 | What gets stored locally | `src/database/` |
 | Global app state | `src/state/AppContext.tsx` |
 | App icon / splash | `assets/` + `app.json` |

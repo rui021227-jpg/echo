@@ -44,6 +44,7 @@ export default (): ExpoConfig => ({
     ...(baseConfig.extra ?? {}),
     sentryDsn: getEnv('EXPO_PUBLIC_SENTRY_DSN'),
     supabaseEdgeFunctionUrl: getEnv('EXPO_PUBLIC_SUPABASE_EDGE_FUNCTION_URL'),
+    supabaseCloudSyncUrl: getEnv('EXPO_PUBLIC_SUPABASE_CLOUD_SYNC_URL'),
     revenueCatIosKey: getEnv('EXPO_PUBLIC_REVENUECAT_IOS_KEY'),
     revenueCatAndroidKey: getEnv('EXPO_PUBLIC_REVENUECAT_ANDROID_KEY'),
     privacyPolicyUrl: getEnv('EXPO_PUBLIC_PRIVACY_POLICY_URL'),
