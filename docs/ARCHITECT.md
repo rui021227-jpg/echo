@@ -18,6 +18,8 @@
 
 Core v1 implementation exists. The active phase is stabilization and launch prep: production config, device QA, prompt QA, store setup, and submission work.
 
+**Design system:** The UI was fully redesigned in April 2026 to the "Radiant Sanctuary" light theme (see `stitch_mindful_breath/golden_sanctuary/DESIGN.md`). All core screens (EmojiPicker, WordInput, Breathing, Reflection) now use the warm cream/sage-green/peach palette. The old dark navy theme is retired.
+
 ---
 
 ## Project Defaults
@@ -95,7 +97,7 @@ Core v1 implementation exists. The active phase is stabilization and launch prep
 | Crash Reporting | @sentry/react-native | No user ID. No session replay. Non-PII only. |
 | Runtime Config | `app.config.ts` + `src/config.ts` | Expo `extra` bridges `.env` values into the app safely. |
 | Navigation | @react-navigation/native-stack | All stacks. No tabs. No drawer. |
-| Animation | react-native-reanimated v4 | Used in BreathingAnimation, FadeOverlay |
+| Animation | react-native-reanimated v4 | Used in BreathingAnimation, WordStep (cloud float + focus scale), EmojiCircle (spring), FadeOverlay |
 | State | React Context (AppContext) | No Redux/Zustand. Global: bootstrap state, premium state, onboarding state, timed-session state. |
 | Testing | jest-expo | 67 unit tests. 12 suites. All green. |
 | Web Preview | react-dom + react-native-web | Browser preview supported on Mac via `npx expo start --web`. |
@@ -140,12 +142,12 @@ ECHO/
 │   │
 │   ├── components/
 │   │   ├── AppScreen.tsx            — Shared safe-area, scroll, and keyboard-aware screen shell.
-│   │   ├── WordStep.tsx             — Shared word-entry UI used by onboarding + daily flow.
-│   │   ├── BreathingStep.tsx        — Shared breathing/skip UI used by onboarding + daily flow.
+│   │   ├── WordStep.tsx             — Word-entry UI: floating cloud animation, 44px centered input, focus scale/glow, gradient Continue button.
+│   │   ├── BreathingStep.tsx        — Breathing/skip UI. Passes isBreathing prop to BreathingAnimation. Pill-shaped skip button.
 │   │   ├── ReminderTimePicker.tsx   — Shared reminder time picker used by onboarding + settings.
-│   │   ├── EmojiCircle.tsx          — Tappable emoji circle with haptic feedback.
-│   │   ├── BreathingAnimation.tsx   — Reanimated expanding/contracting circle. 4s inhale/4s exhale.
-│   │   ├── WeatherAvatar.tsx        — Displays one of 9 weather emoji states.
+│   │   ├── EmojiCircle.tsx          — Props: { emoji, label?, selected, onPress, size? }. Selected=gradient fill+green border; unselected=white card. Haptic on press.
+│   │   ├── BreathingAnimation.tsx   — Props: { isBreathing }. 4-layer concentric animation: outer peach glow (280px) → mid green ring (200px) → inner gradient circle (130px, 10s inhale/hold/exhale) → core green dot (56px, 2s pulse).
+│   │   ├── WeatherAvatar.tsx        — Props: { avatarKey, label?, size? }. Warm peach-glow circular container; renders emoji + optional label below. Falls back to 🌤️.
 │   │   └── FadeOverlay.tsx          — Full-screen fade overlay. Used for 3-min cap close animation.
 │   │
 │   ├── database/
@@ -174,7 +176,7 @@ ECHO/
 │   ├── config.ts                    — Normalized client runtime config + dev warnings for missing values.
 │   │
 │   ├── constants/
-│   │   ├── theme.ts                 — COLORS, FONT_SIZES, SPACING, BORDER_RADIUS. Dark navy base (#1a1a2e).
+│   │   ├── theme.ts                 — COLORS, GRADIENTS, FONT_SIZES, SPACING, BORDER_RADIUS, SHADOWS, GRAIN_OPACITY. Sanctuary light palette: cream bg (#fcf9f1), sage green (#586a48), peach/gold accents (#ffcf93→#ffdcc4).
 │   │   ├── emojis.ts                — EMOJI_SCALE: 5 options with score, emoji char, color (dark→bright).
 │   │   ├── avatars.ts               — AVATAR_MAP: 9 weather states → emoji + gradient colors.
 │   │   ├── prohibited.ts            — PROHIBITED_STRINGS: 8 banned AI output terms.
@@ -440,4 +442,4 @@ Secret-handling rule: no API key may be added, pasted, rotated, or used anywhere
 
 ---
 
-*Last updated: 2026-03-31 — Consolidated project guidance into ARCHITECT.md, kept README.md for setup, shrank VIBE_CODING.md and CLAUDE.md into compatibility pointers, and added a project rule to keep ARCHITECT.md and README.md current.*
+*Last updated: 2026-04-05 — Sanctuary redesign: full light theme overhaul across all core screens (EmojiPicker, WordInput, Breathing, Reflection). Updated theme.ts tokens, component descriptions (EmojiCircle, BreathingAnimation, WeatherAvatar, WordStep, BreathingStep), and design system notes.*

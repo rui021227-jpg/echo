@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS settings (
 - `prohibited.ts` — banned AI output strings: 'should', 'recommend', 'disorder', 'diagnose', 'depressed', 'anxiety disorder', 'mental illness', 'you need to'
 - `crisis.ts` — locale-to-crisis-line map + hardcoded crisis card text
 - `copy.ts` — all UI strings (i18n-ready structure)
-- `theme.ts` — dark navy theme (#1a1a2e), typography, spacing
+- `theme.ts` — Sanctuary light theme: cream bg (#fcf9f1), sage green (#586a48), peach/gold accents. COLORS, GRADIENTS, FONT_SIZES, SPACING, BORDER_RADIUS, SHADOWS, GRAIN_OPACITY.
 
 ### Utilities
 - `dateHelpers.ts` — todayISO, getWeekStart, getDayName, isSunday
@@ -223,13 +223,13 @@ CREATE TABLE IF NOT EXISTS settings (
 8. **OnboardingCompletionScreen** — completes onboarding and hands off to the main app
 
 ### Daily Loop (4 screens, <3 min)
-1. **EmojiPickerScreen** — 5 large circles (80pt), dark-to-bright, haptic on tap, starts timer if from notification
-2. **WordInputScreen** — text field, placeholder "one word", maxLength 20, autoFocus, keyboard immediate
-3. **BreathingScreen** — expanding/contracting circle (reanimated), "60 seconds?" + "skip" link. Skip shows "Rest counts too." for 1.5s. Entry saved to SQLite at this transition.
+1. **EmojiPickerScreen** — 5 emoji circles in an organic arch (translateY offsets), "How are you today?" headline, ambient peach glow, progress bar, gradient Continue button. Haptic on tap. Starts timer if from notification.
+2. **WordInputScreen** — "OneWord" headline, floating ☁️ cloud animation, 44px centered input, focus scale/glow, progress bar. maxLength 20, autoFocus.
+3. **BreathingScreen** — "OneMinute" layout; 4-layer concentric glow animation (BreathingAnimation); breathing instructions; pill skip button (1.5s confirm); progress bar. Entry saved to SQLite at this transition.
 4. **CompletionScreen** — soft checkmark/emoji, 3s display, fade out, close app
 
 ### Reflection (2 screens)
-1. **ReflectionCardScreen** — weather avatar (large emoji) + 3 sentences + "See you next Sunday." Free tier: check monthly allowance, show paywall if exceeded
+1. **ReflectionCardScreen** — "Sunday Reflection" card: LinearGradient avatar section with decorative particles + WeatherAvatar, divider, 3 icon-labelled sentence rows (🕐 ✨ ⚖️), closing quote, insight card, green "Begin a New Week" CTA. Free tier: check monthly allowance, show paywall if exceeded.
 2. **CrisisCardScreen** — hardcoded text + locale-appropriate crisis line number (tappable to dial). Never logged.
 
 ### Other

@@ -8,7 +8,19 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Changed
+### Changed (2026-04-05 — Sanctuary redesign)
+- Full UI redesign to "Radiant Sanctuary" light theme — warm cream backgrounds (#fcf9f1), sage green (#586a48), peach/gold accents (#ffcf93→#ffdcc4). Dark navy palette retired.
+- `theme.ts` fully replaced: new COLORS, GRADIENTS, SHADOWS, BORDER_RADIUS tokens, GRAIN_OPACITY added, BORDERS removed
+- `EmojiPickerScreen`: arch emoji layout with organic translateY offsets, "How are you today?" headline, ambient glow behind arch, progress bar, gradient Continue button, footer quote
+- `EmojiCircle`: new props `{ emoji, selected, onPress, size? }`; selected=peach gradient+green border, unselected=white card with soft shadow
+- `WordInputScreen` + `WordStep`: floating cloud animation (☁️), 44px centered weight-300 input, focus scale/glow, "OneWord" headline, progress bar
+- `BreathingScreen` + `BreathingAnimation` + `BreathingStep`: "OneMinute" layout; 4-layer concentric animation (outer glow → mid ring → gradient inner circle → green core), breathing instructions, pill skip button
+- `ReflectionCardScreen`: "Sunday Reflection" card with LinearGradient avatar section, decorative particles, 3 icon-labelled sentence rows, closing quote, insight card, green CTA
+- `WeatherAvatar`: warm peach-glow circular container; renders emoji + label; falls back to 🌤️
+- `OnboardingEmojiPickerScreen`: updated to new EmojiCircle API
+- `GlassCard`: warm glass surface (surfaceGlass token), updated border opacity
+
+### Changed (previous)
 - Shared the word-entry and breathing-step UI between onboarding and the daily flow
 - Added a shared safe-area, scroll, and keyboard-aware screen shell for settings, about, paywall, and word-entry layouts
 - Reminder time now saves and edits both hour and minute consistently across onboarding and settings

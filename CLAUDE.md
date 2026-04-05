@@ -30,17 +30,34 @@ These rules define how to translate Figma designs into code for ECHO and must be
 
 **IMPORTANT: Never hardcode colors, sizes, or spacing — always use tokens from `src/constants/theme.ts`.**
 
+The app uses the **Radiant Sanctuary** light theme (updated April 2026). All screens are light, warm, and cream-toned — not dark.
+
 ```typescript
-// Colors — import from src/constants/theme.ts
-COLORS.background    // #1a1a2e  — main screen background
-COLORS.surface       // #16213e  — cards and surface containers
-COLORS.surfaceLight  // #1f2f50  — elevated surface variant
-COLORS.primary       // #e2e2f0  — primary text (light lavender)
-COLORS.secondary     // #a0a0c0  — secondary/supporting text
-COLORS.muted         // #6a6a8a  — disabled/tertiary text
-COLORS.accent        // #7b7fda  — interactive elements (buttons, breathing circle)
-COLORS.danger        // #e74c3c  — error states
-COLORS.success       // #2ecc71  — success states
+// Colors — import COLORS from src/constants/theme.ts
+COLORS.background       // #fcf9f1  — nurturing cream screen background
+COLORS.surface          // #ffffff  — card surface
+COLORS.surfaceLight     // #fef6e8  — warm tinted surface
+COLORS.surfaceGlass     // rgba(255,255,255,0.80) — glassmorphism
+COLORS.primary          // #586a48  — Sanctuary Green (buttons, logos, progress)
+COLORS.primaryLight     // #7a9060  — lighter green (CTA gradients)
+COLORS.primaryContainer // rgba(88,106,72,0.10) — soft green wash
+COLORS.accent           // #ffcf93  — peach/gold (highlights, gradients)
+COLORS.accentLight      // #ffdcc4  — lighter peach
+COLORS.accentWarm       // #f5c07a  — deeper gold
+COLORS.onBackground     // #1c1c17  — near-black text (never pure black)
+COLORS.onSurface        // #2e2e28  — dark text on cards
+COLORS.secondary        // #6b6b5e  — secondary/supporting text
+COLORS.muted            // #9e9e8e  — disabled/tertiary text
+COLORS.placeholder      // #b5b5a3  — input placeholders
+COLORS.danger           // #c0392b  — error states
+COLORS.success          // #586a48  — re-uses primary green
+
+// Gradients — import GRADIENTS from src/constants/theme.ts
+GRADIENTS.primary    // ['#ffcf93', '#ffdcc4']  — golden hour CTA gradient
+GRADIENTS.accent     // ['#586a48', '#7a9060']  — green gradient
+GRADIENTS.background // ['#fcf9f1', '#fef6e8']  — warm background gradient
+GRADIENTS.glass      // warm glassmorphism stops
+GRADIENTS.glow       // ambient peach glow stops
 
 // Spacing — import SPACING from src/constants/theme.ts
 SPACING.xs   // 4px
@@ -63,10 +80,14 @@ FONT_SIZES.emoji // 64
 
 // Border radius — import BORDER_RADIUS from src/constants/theme.ts
 BORDER_RADIUS.sm   // 8
-BORDER_RADIUS.md   // 12
-BORDER_RADIUS.lg   // 16
-BORDER_RADIUS.xl   // 24
+BORDER_RADIUS.md   // 16   (updated — was 12)
+BORDER_RADIUS.lg   // 24   (updated — was 16)
+BORDER_RADIUS.xl   // 32   (updated — was 24)
+BORDER_RADIUS.xxl  // 48   (new — for nav, floating cards)
 BORDER_RADIUS.full // 9999
+
+// Grain — import GRAIN_OPACITY from src/constants/theme.ts
+GRAIN_OPACITY      // 0.04 — canvas grain texture overlay opacity
 ```
 
 ### Component Organization
@@ -83,9 +104,10 @@ BORDER_RADIUS.full // 9999
 - Define styles at the bottom of each component file using `StyleSheet.create()`
 - Import and use `COLORS`, `SPACING`, `FONT_SIZES`, `BORDER_RADIUS` from `src/constants/theme.ts`
 - Use inline style composition only for dynamic values (e.g., conditional opacity, runtime-computed values)
-- App is **dark mode only** — all backgrounds use `COLORS.background` or `COLORS.surface` variants
-- Most screens use centered layouts (`justifyContent: 'center'`, `alignItems: 'center'`)
-- Standard container padding: `paddingHorizontal: SPACING.xl` (32px)
+- App uses **light theme (Sanctuary)** — all backgrounds use `COLORS.background` (#fcf9f1 cream) or `COLORS.surface` (#ffffff). No dark backgrounds.
+- No 1px borders — use background color shifts and soft shadows for separation (Sanctuary rule)
+- Most daily screens use a top-bar + scrollable content layout (not pure centered)
+- Standard container padding: `paddingHorizontal: 24` or 28px (screens define their own padding)
 
 ### Typography Rules
 
@@ -129,28 +151,46 @@ BORDER_RADIUS.full // 9999
 
 ```typescript
 // Figma MCP output (React + Tailwind — reference only):
-// <button className="bg-indigo-500 text-white px-8 py-4 rounded-full">Continue</button>
+// <button className="bg-amber-200 text-stone-900 px-8 py-4 rounded-full">Continue →</button>
 
-// ECHO implementation:
+// ECHO implementation (Sanctuary style):
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { GRADIENTS, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 import { COPY } from '../constants/copy';
 
-<TouchableOpacity style={styles.button} onPress={onPress}>
-  <Text style={styles.buttonText}>{COPY.continue}</Text>
+<TouchableOpacity style={styles.wrapper} onPress={onPress}>
+  <LinearGradient
+    colors={GRADIENTS.primary}            // ['#ffcf93', '#ffdcc4'] — golden hour
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 0 }}
+    style={styles.button}
+  >
+    <Text style={styles.buttonText}>{COPY.continue} →</Text>
+  </LinearGradient>
 </TouchableOpacity>
 
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: COLORS.accent,       // #7b7fda — not bg-indigo-500
-    paddingHorizontal: SPACING.xl,        // 32px
-    paddingVertical: SPACING.md,          // 16px
+  wrapper: {
     borderRadius: BORDER_RADIUS.full,     // 9999
+    shadowColor: '#586a48',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.14,
+    shadowRadius: 20,
+    elevation: 5,
+  },
+  button: {
+    height: 56,
+    borderRadius: BORDER_RADIUS.full,     // 9999
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
   },
   buttonText: {
-    color: COLORS.white,
+    color: '#1c1c17',                     // onBackground — near-black
     fontSize: FONT_SIZES.md,              // 16
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
 });
 ```
