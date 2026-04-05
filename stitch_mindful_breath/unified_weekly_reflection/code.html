@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Weekly Sunday Reflection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface": "#fcf9f1", // Soft warm cream as requested
+              "primary": "#586a48", // Sanctuary Green (soft olive)
+              "on-surface": "#38392e",
+              "on-surface-variant": "#586a48",
+              "surface-container": "#f1eee4",
+              "primary-container": "#d5e9bf",
+              "accent-blush": "#fceee9",
+              "outline-variant": "#d9d7cc",
+              "surface-container-high": "#ebe8e0",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-container": "#d9a777",
+              "tertiary": "#7e572e",
+              "primary-dim": "#4e5639",
+              "surface-container-low": "#f6f3f0"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans", "sans-serif"],
+              "body": ["Plus Jakarta Sans", "sans-serif"],
+              "label": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "1.5rem",
+              "lg": "2.5rem",
+              "xl": "4rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .canvas-grain {
+        background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAXbcfxJG8Kl6c4qzFHvitB8WOk4VGyaM-HkNmKHot6pebtcPwTEw4ES_kShMVvJo3oBJhZSxU3kY_d28G12LszNRUp5JaunH4RO882l1nvnS7gBKRwWLJo7k40SHTfJPKlIjn7leYAuTS-SkWyn5SzaAt2aVLP7hBtSVkAv6baIWrkXVbOTnhdW6tfap-IiSdJ-gDkgp5OtAVxeibYbCX10zEMXdCvFUutLVcrOj_7I3xv3hOkyZ1QybBek3ell1hqtwktHchSkA);
+        mix-blend-mode: multiply;
+        opacity: 0.05;
+      }
+      .bubbly-shadow {
+        box-shadow: 0 20px 40px rgba(88, 106, 72, 0.08);
+      }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-container min-h-screen">
+<div class="fixed inset-0 canvas-grain pointer-events-none"></div>
+<!-- Header: Cloud icon + 'Sanctuary' text -->
+<header class="fixed top-0 w-full px-6 py-4 z-50 bg-[#fcf9f1]/80 backdrop-blur-xl">
+<div class="flex justify-between items-center w-full max-w-screen-xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">cloud</span>
+</div>
+<div class="font-headline font-bold text-primary tracking-tight text-lg">Sanctuary</div>
+</div>
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-300">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<main class="max-w-2xl mx-auto px-6 pt-28 pb-44 relative z-10">
+<!-- Date Header & Sunday Reflection Header -->
+<div class="mb-10 text-center">
+<div class="mb-2">
+<p class="text-[0.7rem] font-bold tracking-[0.2em] text-primary/40 uppercase">SUNDAY, OCTOBER 29</p>
+</div>
+<h2 class="font-headline font-bold text-[2.5rem] leading-tight tracking-tight text-primary mt-2">Sunday Reflection</h2>
+<p class="text-primary/60 mt-4 text-lg max-w-sm mx-auto italic">A moment of stillness to witness the week that was.</p>
+</div>
+<!-- The Premium Reflection Card -->
+<div class="relative group">
+<div class="absolute -inset-4 bg-primary-container/20 blur-3xl rounded-xl opacity-50 group-hover:opacity-80 transition duration-1000"></div>
+<div class="relative rounded-[3rem] bg-white border border-white/40 shadow-[0_32px_64px_-12px_rgba(88,106,72,0.1)] overflow-hidden">
+<!-- Top Section: The Weather Avatar (Gently Bright) -->
+<div class="h-64 flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-primary-container/20 to-surface/40">
+<div class="absolute top-0 right-0 w-64 h-64 bg-accent-blush/40 rounded-full -mr-20 -mt-20 blur-2xl"></div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-32 h-32 rounded-full bg-white flex items-center justify-center shadow-lg mb-4 border border-white/50">
+<span class="material-symbols-outlined text-tertiary text-6xl" style="font-variation-settings: 'FILL' 1;">partly_cloudy_day</span>
+</div>
+<span class="font-headline font-semibold text-primary text-xl">Gently Bright</span>
+</div>
+<!-- Floating Particles -->
+<div class="absolute bottom-4 left-8 w-3 h-3 rounded-full bg-primary-container"></div>
+<div class="absolute top-12 left-20 w-2 h-2 rounded-full bg-primary/20"></div>
+<div class="absolute bottom-16 right-12 w-4 h-4 rounded-full bg-tertiary/20"></div>
+</div>
+<!-- Bottom Section: The Content (3 bullet points with bold typography) -->
+<div class="px-8 py-10 space-y-8">
+<!-- Fact Section 1 -->
+<div class="flex gap-5 items-start">
+<div class="shrink-0 w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">history</span>
+</div>
+<div>
+<p class="text-on-surface font-body text-[17px] leading-relaxed">
+                                You checked in <span class="font-bold text-primary">5 times</span> this week. <span class="italic text-primary/70">'Tired'</span> and <span class="italic text-primary/70">'Grateful'</span> were your most frequent words.
+                            </p>
+</div>
+</div>
+<!-- Fact Section 2 -->
+<div class="flex gap-5 items-start">
+<div class="shrink-0 w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">insights</span>
+</div>
+<div>
+<p class="text-on-surface font-body text-[17px] leading-relaxed">
+                                Your mood seemed to lift <span class="font-bold text-primary">after your breathing sessions</span>, showing a quiet path toward clarity.
+                            </p>
+</div>
+</div>
+<!-- Fact Section 3 -->
+<div class="flex gap-5 items-start">
+<div class="shrink-0 w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">balance</span>
+</div>
+<div>
+<p class="text-on-surface font-body text-[17px] leading-relaxed">
+                                You <span class="font-bold text-primary">prioritized rest during your busy stretches</span>, showing a healthy balance between effort and recovery.
+                            </p>
+</div>
+</div>
+<!-- Close Section -->
+<div class="pt-8 border-t border-primary/10 flex flex-col items-center text-center">
+<div class="w-1 h-1 bg-primary/30 rounded-full mb-6"></div>
+<p class="text-primary font-headline font-medium text-xl italic leading-relaxed">
+                            "May next week bring you the rest you deserve."
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Card -->
+<div class="mt-8 flex justify-center">
+<div class="w-full p-6 rounded-lg bg-surface-container/60 border border-white/50 backdrop-blur-sm">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary mt-1">auto_awesome</span>
+<p class="text-primary/70 text-sm leading-relaxed font-medium">
+                        Reflection is the bridge between experience and wisdom. Your consistency this week has built a strong foundation for tomorrow.
+                    </p>
+</div>
+</div>
+</div>
+<!-- Call to Action: Begin a New Week in soft olive green -->
+<div class="mt-14 flex justify-center">
+<button class="bg-primary text-surface px-12 py-5 rounded-full font-headline font-bold text-lg shadow-xl shadow-primary/20 hover:opacity-90 active:scale-95 transition-all duration-300">
+                Begin a New Week
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation: 4 icons with larger icons, Reflection active -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-center pb-8 pointer-events-none">
+<div class="bg-white/80 backdrop-blur-xl fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md rounded-[3rem] px-6 py-4 shadow-[0_40px_60px_-15px_rgba(83,99,70,0.12)] flex justify-between items-center pointer-events-auto border border-white/20">
+<!-- Rate -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[28px] group-active:scale-90 transition-transform">favorite</span>
+<span class="font-headline text-[11px] font-medium mt-1">Rate</span>
+</a>
+<!-- Journal -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[28px] group-active:scale-90 transition-transform">edit_note</span>
+<span class="font-headline text-[11px] font-medium mt-1">Journal</span>
+</a>
+<!-- Breath -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[28px] group-active:scale-90 transition-transform">self_improvement</span>
+<span class="font-headline text-[11px] font-medium mt-1">Breath</span>
+</a>
+<!-- Reflection (Active) -->
+<a class="flex flex-col items-center justify-center text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-headline text-[11px] font-bold mt-1">Reflection</span>
+</a>
+</div>
+</nav>
+</body></html>

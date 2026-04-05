@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mindful Observer - OneWord</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface": "#F7F6F0",
+              "surface-container": "#f1eee4",
+              "primary": "#586a48",
+              "on-primary": "#ffffff",
+              "primary-container": "#d5e9bf",
+              "on-primary-container": "#3d4c31",
+              "secondary": "#7c846b",
+              "surface-variant": "#e6e8de",
+              "on-surface-variant": "#44483d",
+              "outline": "#75796c",
+              "background": "#F7F6F0",
+              "surface-container-high": "#ebe8e0"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans", "sans-serif"],
+              "body": ["Plus Jakarta Sans", "sans-serif"],
+              "label": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {
+                "DEFAULT": "1.5rem",
+                "lg": "2.5rem",
+                "xl": "4rem",
+                "full": "9999px"
+            },
+            animation: {
+                'float': 'float 3s ease-in-out infinite',
+                'bounce-short': 'bounce-short 0.5s ease-in-out 1'
+            },
+            keyframes: {
+                float: {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-10px)' },
+                },
+                'bounce-short': {
+                  '0%, 100%': { transform: 'translateY(0)' },
+                  '50%': { transform: 'translateY(-4px)' }
+                }
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+            background-color: #F7F6F0;
+        }
+        .text-input-field::placeholder {
+            color: #586a48;
+            opacity: 0.3;
+        }
+        .text-input-field:focus::placeholder {
+            color: transparent;
+            transition: all 0.3s ease;
+        }
+        .bubbly-shadow {
+            box-shadow: 0 20px 40px rgba(88, 106, 72, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-[#38392e] min-h-screen flex flex-col overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar component mapping -->
+<header class="fixed top-0 w-full px-6 py-4 z-50 bg-[#F7F6F0]/80 backdrop-blur-xl">
+<div class="flex justify-between items-center w-full max-w-screen-xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">cloud</span>
+</div>
+<div class="font-headline font-bold text-primary tracking-tight">Sanctuary</div>
+</div>
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-300">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center px-8 relative pt-20">
+<!-- Date Header -->
+<div class="mb-2 text-center">
+<p class="text-[0.7rem] font-bold tracking-[0.2em] text-primary/40 uppercase">Tuesday, October 24</p>
+</div>
+<!-- Prompt Section -->
+<div class="w-full max-w-md text-center mb-12">
+<h1 class="text-[2.75rem] font-extrabold text-primary leading-tight tracking-tight mb-2">OneWord</h1>
+<p class="text-on-surface-variant font-medium opacity-60 leading-relaxed">Let your thought float onto the page.</p>
+</div>
+<!-- Input Section -->
+<div class="w-full max-w-xl flex flex-col items-center gap-8">
+<div class="relative w-full group flex flex-col items-center">
+<!-- Tiny Friendly Cloud Character -->
+<div class="absolute -left-4 -top-12 animate-float opacity-30">
+<span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">cloud</span>
+</div>
+<div class="w-full bg-surface-container/60 rounded-xl px-12 py-10 bubbly-shadow transition-all duration-500 border-2 border-transparent focus-within:border-primary-container/30">
+<input autofocus="" class="text-input-field w-full text-center bg-transparent border-none focus:ring-0 text-[3rem] md:text-[4.5rem] font-headline font-bold text-primary tracking-tight transition-all duration-500" maxlength="20" placeholder="peace..." type="text"/>
+</div>
+</div>
+<!-- Progress Bar (Adopted from SCREEN_15, set to 50%) -->
+<div class="flex justify-center w-full mb-4">
+<div class="w-32 sm:w-40 h-2 bg-surface-container-high rounded-full overflow-hidden flex items-center px-0.5">
+<div class="h-1 w-1/2 bg-primary rounded-full"></div>
+</div>
+</div>
+<!-- Bubbly Rounded Pill Continue Button -->
+<button class="group relative flex flex-col items-center gap-4 transition-all duration-500 active:scale-95">
+<div class="px-12 py-5 rounded-full bg-primary text-on-primary flex items-center gap-3 bubbly-shadow hover:bg-primary/90 transition-all duration-300 hover:scale-105">
+<span class="font-headline font-bold tracking-wide">Continue</span>
+<span class="material-symbols-outlined font-bold">arrow_forward</span>
+</div>
+</button>
+</div>
+</main>
+<!-- Refined Bottom Navigation -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-center pb-8 pointer-events-none">
+<div class="bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md rounded-[3rem] px-6 py-4 shadow-[0_40px_60px_-15px_rgba(83,99,70,0.08)] flex justify-between items-center pointer-events-auto">
+<!-- Rate -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] dark:text-[#d3c4b5] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]" data-icon="favorite">favorite</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium mt-1">Rate</span>
+</a>
+<!-- Journal -->
+<a class="flex flex-col items-center justify-center text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]" data-icon="edit_note" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium mt-1">Journal</span>
+</a>
+<!-- Breath -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] dark:text-[#d3c4b5] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]" data-icon="self_improvement">self_improvement</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium mt-1">Breath</span>
+</a>
+<!-- Reflection -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] dark:text-[#d3c4b5] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium mt-1">Reflection</span>
+</a>
+</div>
+</nav>
+<!-- Visual Hint Footer -->
+<footer class="w-full pb-36 pt-4 px-8 flex justify-center items-center">
+<div class="flex gap-2 items-center text-primary/30 text-[0.7rem] font-bold tracking-[0.15em] uppercase">
+<span class="material-symbols-outlined text-[0.9rem]">keyboard_return</span>
+<span>Tap enter to save</span>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Radiant Sanctuary - Daily Entry</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#7a3f02",
+                    "on-primary-fixed": "#121f08",
+                    "surface-variant": "#e5e2db",
+                    "on-surface": "#1c1c17",
+                    "secondary-container": "#ffcf93",
+                    "surface-container-low": "#f6f3eb",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#d6e8c3",
+                    "on-secondary-container": "#795726",
+                    "secondary-fixed-dim": "#edbe84",
+                    "on-tertiary-fixed-variant": "#6f3800",
+                    "surface-tint": "#536346",
+                    "primary-fixed-dim": "#bbcca9",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed": "#ffdcc4",
+                    "tertiary-container": "#ffae6f",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#ffddb5",
+                    "surface-container-highest": "#e5e2db",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "background": "#fcf9f1",
+                    "on-background": "#1c1c17",
+                    "inverse-primary": "#bbcca9",
+                    "surface-dim": "#dcdad2",
+                    "surface-container": "#f1eee6",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#2f1400",
+                    "inverse-surface": "#31312b",
+                    "surface": "#fcf9f1",
+                    "secondary": "#7b5827",
+                    "outline-variant": "#d3c4b5",
+                    "surface-bright": "#fcf9f1",
+                    "on-primary-container": "#435337",
+                    "on-secondary-fixed-variant": "#604011",
+                    "outline": "#817568",
+                    "on-secondary-fixed": "#2a1800",
+                    "on-primary-fixed-variant": "#3c4b30",
+                    "surface-container-high": "#ebe8e0",
+                    "inverse-on-surface": "#f3f1e9",
+                    "tertiary": "#8e4e14",
+                    "primary": "#536346",
+                    "tertiary-fixed-dim": "#ffb780",
+                    "primary-container": "#b4c6a2",
+                    "on-surface-variant": "#4f453a",
+                    "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            },
+            animation: {
+                'float': 'float 3s ease-in-out infinite',
+            },
+            keyframes: {
+                float: {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-10px)' },
+                }
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-bg {
+            background: radial-gradient(circle at 50% 50%, rgba(255, 207, 147, 0.15) 0%, rgba(252, 249, 241, 0) 70%);
+        }
+        .bubbly-shadow {
+            box-shadow: 0 20px 40px rgba(83, 99, 70, 0.15);
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-[#fcf9f1] text-on-surface min-h-screen flex flex-col overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full px-6 py-4 z-50">
+<div class="flex justify-between items-center w-full max-w-2xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary animate-float">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">cloud</span>
+</div>
+<div class="font-bold text-primary tracking-tight">Sanctuary</div>
+</div>
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-300">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<main class="flex-grow relative flex flex-col items-center justify-center px-4 pb-40 pt-20">
+<!-- Sun-drenched ambient glow effect -->
+<div class="absolute inset-0 glow-bg pointer-events-none"></div>
+<section class="w-full max-w-2xl text-center z-10 flex flex-col items-center">
+<p class="text-on-surface-variant font-medium mb-2 tracking-widest uppercase text-[10px] opacity-60">Tuesday, October 24</p>
+<h2 class="text-[2.75rem] font-extrabold text-on-surface leading-tight tracking-tight mb-2">How are you today?</h2>
+<p class="text-on-surface-variant mb-12 text-lg italic opacity-80">Take a moment to just be.</p>
+<!-- Flattened Arch Layout for Moods -->
+<div class="relative w-full h-[280px] flex items-center justify-center mb-8">
+<div class="flex items-end justify-between w-full max-w-lg mx-auto">
+<!-- Melancholy -->
+<button class="flex flex-col items-center group active:scale-90 transition-transform duration-300 transform -translate-y-2">
+<div class="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-container-highest transition-all mb-3 shadow-sm">
+<span class="text-4xl">😔</span>
+</div>
+<span class="text-[10px] font-semibold text-on-surface-variant tracking-wide">Melancholy</span>
+</button>
+<!-- Quiet -->
+<button class="flex flex-col items-center group active:scale-90 transition-transform duration-300 transform -translate-y-8">
+<div class="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-container-highest transition-all mb-3 shadow-sm">
+<span class="text-4xl">☁️</span>
+</div>
+<span class="text-[10px] font-semibold text-on-surface-variant tracking-wide">Quiet</span>
+</button>
+<!-- Centered (Hero Mood) -->
+<button class="flex flex-col items-center group active:scale-90 transition-transform duration-300 transform -translate-y-12">
+<div class="w-24 h-24 sm:w-26 sm:h-26 rounded-full bg-gradient-to-br from-[#ffcf93] to-[#ffdcc4] flex items-center justify-center transition-all mb-3 shadow-lg ring-4 ring-[#fcf9f1]">
+<span class="text-5xl">✨</span>
+</div>
+<span class="text-xs font-bold text-on-surface tracking-wide">Centered</span>
+</button>
+<!-- Grateful -->
+<button class="flex flex-col items-center group active:scale-90 transition-transform duration-300 transform -translate-y-8">
+<div class="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-container-highest transition-all mb-3 shadow-sm">
+<span class="text-4xl">☀️</span>
+</div>
+<span class="text-[10px] font-semibold text-on-surface-variant tracking-wide">Grateful</span>
+</button>
+<!-- Radiant -->
+<button class="flex flex-col items-center group active:scale-90 transition-transform duration-300 transform -translate-y-2">
+<div class="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-container-highest transition-all mb-3 shadow-sm">
+<span class="text-4xl">🌈</span>
+</div>
+<span class="text-[10px] font-semibold text-on-surface-variant tracking-wide">Radiant</span>
+</button>
+</div>
+</div>
+<!-- Progress Bar: Step 1 of 4 -->
+<div class="flex justify-center w-full mb-8">
+<div class="w-32 h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full w-1/4 bg-primary rounded-full"></div>
+</div>
+</div>
+<!-- Continue Button -->
+<div class="flex justify-center mb-10">
+<button class="group relative px-12 py-5 rounded-full bg-primary text-on-primary flex items-center gap-3 bubbly-shadow hover:bg-primary/90 transition-all duration-300 active:scale-95">
+<span class="font-bold tracking-wide">Continue</span>
+<span class="material-symbols-outlined font-bold">arrow_forward</span>
+</button>
+</div>
+<div class="text-on-surface-variant italic opacity-40 text-lg">
+                "Every breath is a fresh start."
+            </div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-center pb-8 pointer-events-none">
+<div class="bg-white/80 backdrop-blur-xl fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md rounded-[3rem] px-6 py-4 shadow-[0_40px_60px_-15px_rgba(83,99,70,0.08)] flex justify-between items-center pointer-events-auto">
+<!-- Rate (Active State) -->
+<a class="flex flex-col items-center justify-center text-primary" href="#">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="text-[11px] font-bold mt-1">Rate</span>
+</a>
+<!-- Journal -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[32px]">edit_note</span>
+<span class="text-[11px] font-medium mt-1">Journal</span>
+</a>
+<!-- Breath -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[32px]">self_improvement</span>
+<span class="text-[11px] font-medium mt-1">Breath</span>
+</a>
+<!-- Reflection -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[32px]">auto_awesome</span>
+<span class="text-[11px] font-medium mt-1">Reflection</span>
+</a>
+</div>
+</nav>
+</body></html>

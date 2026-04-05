@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface": "#F7F6F0", // Sanctuary Cream
+              "primary": "#586a48", // Sanctuary Green
+              "on-surface": "#38392e",
+              "on-surface-variant": "#586a48",
+              "surface-container": "#f1eee4",
+              "primary-container": "#d5e9bf",
+              "accent-blush": "#fceee9",
+              "outline-variant": "#d9d7cc",
+              "surface-container-high": "#ebe8e0"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans", "sans-serif"],
+              "body": ["Plus Jakarta Sans", "sans-serif"],
+              "label": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "1.5rem",
+              "lg": "2.5rem",
+              "xl": "4rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+      }
+      @keyframes breathe-gentle {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 0.6;
+          filter: blur(40px);
+        }
+        50% {
+          transform: scale(1.3);
+          opacity: 0.9;
+          filter: blur(60px);
+        }
+      }
+      @keyframes pulse-core {
+        0%, 100% {
+          transform: scale(0.95);
+          box-shadow: 0 0 40px rgba(88, 106, 72, 0.15);
+        }
+        50% {
+          transform: scale(1.05);
+          box-shadow: 0 0 80px rgba(88, 106, 72, 0.3);
+        }
+      }
+      .breathing-glow {
+        animation: breathe-gentle 10s ease-in-out infinite;
+      }
+      .breathing-core {
+        animation: pulse-core 10s ease-in-out infinite;
+      }
+      .canvas-grain {
+        background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAXbcfxJG8Kl6c4qzFHvitB8WOk4VGyaM-HkNmKHot6pebtcPwTEw4ES_kShMVvJo3oBJhZSxU3kY_d28G12LszNRUp5JaunH4RO882l1nvnS7gBKRwWLJo7k40SHTfJPKlIjn7leYAuTS-SkWyn5SzaAt2aVLP7hBtSVkAv6baIWrkXVbOTnhdW6tfap-IiSdJ-gDkgp5OtAVxeibYbCX10zEMXdCvFUutLVcrOj_7I3xv3hOkyZ1QybBek3ell1hqtwktHchSkA);
+        mix-blend-mode: multiply;
+        opacity: 0.05;
+      }
+      .bubbly-shadow {
+        box-shadow: 0 20px 40px rgba(88, 106, 72, 0.08);
+      }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface min-h-screen flex flex-col overflow-hidden">
+<div class="fixed inset-0 canvas-grain pointer-events-none"></div>
+<!-- TopAppBar (Match SCREEN_23) -->
+<header class="fixed top-0 w-full px-6 py-4 z-50 bg-[#F7F6F0]/80 backdrop-blur-xl">
+<div class="flex justify-between items-center w-full max-w-screen-xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">cloud</span>
+</div>
+<div class="font-headline font-bold text-primary tracking-tight">Sanctuary</div>
+</div>
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-300">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<main class="relative flex-1 flex flex-col items-center justify-between px-8 pt-24 pb-40 max-w-2xl mx-auto w-full">
+<div class="w-full flex flex-col items-center text-center">
+<!-- Date Header (Match SCREEN_23) -->
+<div class="mb-2">
+<p class="text-[0.7rem] font-bold tracking-[0.2em] text-primary/40 uppercase">Tuesday, October 24</p>
+</div>
+<!-- Header Section -->
+<div class="space-y-3 z-10 mt-2">
+<h1 class="font-headline font-semibold tracking-tight text-[1.75rem] text-primary mb-2">OneMinute</h1>
+<p class="text-primary/40 font-bold text-[0.7rem] tracking-[0.2em] uppercase">
+                just for now
+            </p>
+</div>
+</div>
+<!-- Central Breathing Component (Styled for Golden Sanctuary) -->
+<div class="relative flex items-center justify-center w-full aspect-square max-w-[360px] my-8">
+<!-- Soft Blush Glow Background -->
+<div class="absolute inset-0 bg-primary-container/20 rounded-full blur-[80px]"></div>
+<!-- Breathing Glow Layers -->
+<div class="breathing-glow absolute w-72 h-72 bg-primary/10 rounded-full"></div>
+<div class="breathing-glow absolute w-56 h-56 bg-primary/20 rounded-full" style="animation-delay: -2s;"></div>
+<!-- The Core Circle -->
+<div class="breathing-core relative w-48 h-48 bg-white/60 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 shadow-xl">
+<div class="w-full h-full rounded-full border-4 border-primary/5"></div>
+</div>
+<!-- Subtle Imagery Integration -->
+<div class="absolute inset-0 z-[-1] opacity-10 flex items-center justify-center scale-90">
+<div class="w-full h-full rounded-full overflow-hidden mix-blend-multiply">
+<img class="w-full h-full object-cover" data-alt="Soft focus macro shot of water ripples" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-If4B-lwZBCdlbzhaFi0qejbZVGTnw9LmDAhdtfYhyqwSPj_T5FnK968IKCghdZDz22yrEOMp3g4si6YljMaJ9Bk4QF6ROU3N7fs3-8g_ODaSCtQ2p_PJXfF8TFEDYUCbwqbCXmpAHbCc3VsyHxOQxvogp5aG8a2jc9traOEjyNIvO_cySaNFEevnGUDQfxHW65H-Xm5-ZUjm9YXuSViGJ5wc94OHrtg_chz_nZJ4VrpH_9N5k3fnVfqcAcHEylYVqZ25WDfYkg"/>
+</div>
+</div>
+</div>
+<!-- Interaction / Footer Section -->
+<div class="flex flex-col items-center w-full z-10 gap-8">
+<div class="flex flex-col items-center space-y-2">
+<span class="text-primary font-medium opacity-50 text-[0.9rem] tracking-tight italic">inhale through the nose</span>
+<span class="text-primary font-medium opacity-50 text-[0.9rem] tracking-tight italic">exhale through the mouth</span>
+</div>
+<!-- Progress Bar (75% full - Step 3 of 4) -->
+<div class="flex justify-center w-full">
+<div class="w-32 sm:w-40 h-2 bg-surface-container-high rounded-full overflow-hidden flex items-center px-0.5">
+<div class="h-1 w-3/4 bg-primary rounded-full"></div>
+</div>
+</div>
+<a class="group relative px-10 py-4 rounded-full bg-surface-container/80 hover:bg-primary-container/40 transition-all duration-500 active:scale-95 bubbly-shadow" href="#">
+<span class="text-primary font-bold tracking-wide text-sm">
+                Skip
+            </span>
+</a>
+<!-- Instructional Text -->
+<div class="text-[0.65rem] font-medium text-primary/30 tracking-tight leading-relaxed text-center">
+            A simple moment of presence.<br/>No streaks. No goals.
+        </div>
+</div>
+</main>
+<!-- Refined Bottom Navigation (Match SCREEN_23) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-center pb-8 pointer-events-none">
+<div class="bg-white/80 backdrop-blur-xl fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md rounded-[3rem] px-6 py-4 shadow-[0_40px_60px_-15px_rgba(83,99,70,0.08)] flex justify-between items-center pointer-events-auto">
+<!-- Rate -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]">favorite</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium mt-1">Rate</span>
+</a>
+<!-- Journal -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]">edit_note</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium mt-1">Journal</span>
+</a>
+<!-- Breath -->
+<a class="flex flex-col items-center justify-center text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">self_improvement</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium mt-1">Breath</span>
+</a>
+<!-- Reflection -->
+<a class="flex flex-col items-center justify-center text-[#4f453a] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]">auto_awesome</span>
+<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium mt-1">Reflection</span>
+</a>
+</div>
+</nav>
+</body></html>
