@@ -1,23 +1,31 @@
 export const COLORS = {
-  background: '#1a1a2e',
-  surface: '#16213e',
-  surfaceLight: '#1f2f50',
-  primary: '#e2e2f0',
-  secondary: '#a0a0c0',
-  muted: '#6a6a8a',
-  accent: '#7b7fda',
+  background: '#fcf9f1',
+  surface: '#ffffff',
+  surfaceLight: '#fef6e8',
+  surfaceGlass: 'rgba(255,255,255,0.80)',
+  primary: '#586a48',
+  primaryLight: '#7a9060',
+  primaryContainer: 'rgba(88,106,72,0.10)',
+  accent: '#ffcf93',
+  accentLight: '#ffdcc4',
+  accentWarm: '#f5c07a',
+  onBackground: '#1c1c17',
+  onSurface: '#2e2e28',
+  secondary: '#6b6b5e',
+  muted: '#9e9e8e',
+  placeholder: '#b5b5a3',
   white: '#ffffff',
   black: '#000000',
-  danger: '#e74c3c',
-  success: '#2ecc71',
+  danger: '#c0392b',
+  success: '#586a48',
 } as const;
 
 export const GRADIENTS = {
-  primary: ['#1f2f50', '#2a3b66'] as const,
-  accent: ['#6e71c9', '#8f93ea'] as const,
-  glow: ['rgba(123, 127, 218, 0.2)', 'rgba(123, 127, 218, 0.05)'] as const,
-  dark: ['#1a1a2e', '#16213e'] as const,
-  glass: ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.02)'] as const,
+  primary: ['#ffcf93', '#ffdcc4'] as const,
+  accent: ['#586a48', '#7a9060'] as const,
+  background: ['#fcf9f1', '#fef6e8'] as const,
+  glass: ['rgba(255,255,255,0.85)', 'rgba(255,255,255,0.65)'] as const,
+  glow: ['rgba(255,207,147,0.15)', 'rgba(255,220,196,0.05)'] as const,
 } as const;
 
 export const FONT_SIZES = {
@@ -43,47 +51,35 @@ export const SPACING = {
 
 export const BORDER_RADIUS = {
   sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
   full: 9999,
 } as const;
 
 export const SHADOWS = {
   card: {
-    shadowColor: '#7b7fda',
+    shadowColor: '#586a48',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 6,
+    shadowOpacity: 0.07,
+    shadowRadius: 24,
+    elevation: 4,
   },
   glow: {
-    shadowColor: '#8f93ea',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 24,
-    elevation: 8,
+    shadowColor: '#ffcf93',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.20,
+    shadowRadius: 20,
+    elevation: 6,
   },
   soft: {
-    shadowColor: '#000',
+    shadowColor: '#1c1c17',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
   },
 };
 
-export const BORDERS = {
-  card: {
-    borderWidth: 1 as const,
-    borderColor: 'rgba(123, 127, 218, 0.15)',
-  },
-  subtle: {
-    borderWidth: 1 as const,
-    borderColor: 'rgba(226, 226, 240, 0.08)',
-  },
-  accent: {
-    borderWidth: 1 as const,
-    borderColor: 'rgba(123, 127, 218, 0.4)',
-  },
-};
+export const GRAIN_OPACITY = 0.04;

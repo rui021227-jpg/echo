@@ -1,20 +1,43 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, FONT_SIZES, SPACING, GRADIENTS, SHADOWS } from '../constants/theme';
-import { COPY } from '../constants/copy';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { isValidWord } from '../utils/validators';
-import { AppScreen } from './AppScreen';
-import { GlassCard } from './GlassCard';
+
+const S = {
+  bg: '#fcf9f1',
+  surface: '#ffffff',
+  green: '#586a48',
+  cream: '#ffdcc4',
+  peach: '#ffcf93',
+  textMain: '#1c1c17',
+  textMuted: '#9e9e8e',
+  textSecondary: '#6b6b5e',
+};
+
+const MAX_LENGTH = 20;
 
 interface Props {
   onSubmit: (word: string) => void;
   secondsRemaining?: number;
   isTimedSessionActive?: boolean;
 }
-
-const MAX_LENGTH = 20;
 
 export function WordStep({
   onSubmit,
@@ -24,6 +47,21 @@ export function WordStep({
   const [word, setWord] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const floatY = useSharedValue(0);
+  const focusScale = useSharedValue(1);
+  const focusBg = useSharedValue(0);
+
+  useEffect(() => {
+    floatY.value = withRepeat(
+      withSequence(
+        withTiming(-10, { duration: 1600, easing: Easing.inOut(Easing.sine) }),
+        withTiming(0, { duration: 1600, easing: Easing.inOut(Easing.sine) }),
+      ),
+      -1,
+      true,
+    );
+  }, [floatY]);
+
   useFocusEffect(
     useCallback(() => {
       setIsSubmitting(false);
@@ -31,23 +69,39 @@ export function WordStep({
   );
 
   const handleDone = () => {
-    if (isSubmitting || !isValidWord(word)) {
-      return;
-    }
-
+    if (isSubmitting || !isValidWord(word)) return;
+    Keyboard.dismiss();
     setIsSubmitting(true);
     onSubmit(word.trim());
   };
 
-  return (
-    <AppScreen scroll keyboard centered contentContainerStyle={styles.screenContent}>
-      {isTimedSessionActive ? <Text style={styles.timer}>{secondsRemaining}s</Text> : null}
+  const cloudStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: floatY.value }],
+  }));
 
-      <GlassCard glow bordered style={styles.inputContainer}>
+  const inputContainerAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: focusScale.value }],
+    backgroundColor: focusBg.value === 1 ? S.surface : 'transparent',
+    shadowOpacity: focusBg.value * 0.12,
+  }));
+
+  const isValid = isValidWord(word);
+
+  return (
+    <View style={styles.container}>
+      {isTimedSessionActive ? (
+        <Text style={styles.timer}>{secondsRemaining}s</Text>
+      ) : null}
+
+      <Animated.View style={[styles.cloudWrapper, cloudStyle]}>
+        <Text style={styles.cloudEmoji}>☁️</Text>
+      </Animated.View>
+
+      <Animated.View style={[styles.inputCard, inputContainerAnimStyle]}>
         <TextInput
           style={styles.input}
-          placeholder={COPY.daily.wordPlaceholder}
-          placeholderTextColor={COLORS.muted}
+          placeholder="peace..."
+          placeholderTextColor={S.textMuted}
           value={word}
           onChangeText={setWord}
           maxLength={MAX_LENGTH}
@@ -57,80 +111,119 @@ export function WordStep({
           editable={!isSubmitting}
           autoCapitalize="none"
           autoCorrect={false}
+          onFocus={() => {
+            focusScale.value = withSpring(1.02, { damping: 14, stiffness: 120 });
+            focusBg.value = withTiming(1, { duration: 250 });
+          }}
+          onBlur={() => {
+            focusScale.value = withSpring(1, { damping: 14, stiffness: 120 });
+            focusBg.value = withTiming(0, { duration: 250 });
+          }}
         />
         <Text style={styles.counter}>
-          {word.length}/{MAX_LENGTH}
+          {word.length} / {MAX_LENGTH}
         </Text>
-      </GlassCard>
+      </Animated.View>
 
       <TouchableOpacity
-        style={[
-          styles.buttonWrapper,
-          (!isValidWord(word) || isSubmitting) && styles.buttonDisabled,
-        ]}
+        style={[styles.buttonWrapper, (!isValid || isSubmitting) && styles.buttonDisabled]}
         onPress={handleDone}
-        disabled={!isValidWord(word) || isSubmitting}
-        activeOpacity={0.8}
+        disabled={!isValid || isSubmitting}
+        activeOpacity={0.85}
       >
         <LinearGradient
-          colors={GRADIENTS.accent}
+          colors={[S.peach, S.cream]}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          end={{ x: 1, y: 0 }}
           style={styles.button}
         >
-          <Text style={styles.buttonText}>{COPY.daily.wordDone}</Text>
+          <Text style={styles.buttonText}>Continue →</Text>
         </LinearGradient>
       </TouchableOpacity>
-    </AppScreen>
+
+      <Text style={styles.footerHint}>tap continue when you're ready</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screenContent: {
+  container: {
+    alignItems: 'center',
+    paddingVertical: 32,
+    paddingHorizontal: 24,
     width: '100%',
-    paddingVertical: SPACING.xxxl,
-  },
-  inputContainer: {
-    width: '100%',
-    marginBottom: SPACING.xl,
-    paddingVertical: SPACING.lg,
   },
   timer: {
     position: 'absolute',
-    top: SPACING.xl,
-    right: 0,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.muted,
+    top: 8,
+    right: 24,
+    fontSize: 13,
+    color: S.textMuted,
+  },
+  cloudWrapper: {
+    alignSelf: 'flex-start',
+    marginLeft: 8,
+    marginBottom: 4,
+  },
+  cloudEmoji: {
+    fontSize: 36,
+    opacity: 0.28,
+  },
+  inputCard: {
+    width: '100%',
+    borderRadius: 20,
+    paddingVertical: 28,
+    paddingHorizontal: 20,
+    marginBottom: 32,
+    shadowColor: S.green,
+    shadowOffset: { width: 0, height: 12 },
+    shadowRadius: 28,
+    elevation: 6,
   },
   input: {
-    fontSize: FONT_SIZES.xxl,
-    color: COLORS.primary,
+    fontSize: 44,
+    fontWeight: '300',
     textAlign: 'center',
-    paddingVertical: SPACING.md,
+    color: S.textMain,
     width: '100%',
+    paddingVertical: 4,
   },
   counter: {
-    fontSize: FONT_SIZES.xs,
-    color: COLORS.muted,
+    fontSize: 12,
+    color: S.textMuted,
     textAlign: 'right',
-    marginTop: SPACING.xs,
+    marginTop: 8,
   },
   buttonWrapper: {
-    ...SHADOWS.glow,
-    borderRadius: 12,
+    borderRadius: 9999,
+    shadowColor: S.green,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.14,
+    shadowRadius: 20,
+    elevation: 5,
+    marginBottom: 16,
   },
   button: {
-    backgroundColor: COLORS.accent,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.xxl,
-    borderRadius: 12,
+    paddingVertical: 18,
+    paddingHorizontal: 52,
+    borderRadius: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonDisabled: {
-    opacity: 0.4,
+    opacity: 0.45,
   },
   buttonText: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
-    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: '700',
+    color: S.textMain,
+    letterSpacing: 0.3,
+  },
+  footerHint: {
+    fontSize: 11,
+    fontStyle: 'italic',
+    color: S.textMuted,
+    textAlign: 'center',
+    marginTop: 4,
   },
 });

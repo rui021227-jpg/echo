@@ -1,9 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZES, SPACING } from '../constants/theme';
+import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { COPY } from '../constants/copy';
-import { AppScreen } from './AppScreen';
 import { BreathingAnimation } from './BreathingAnimation';
+
+const S = {
+  surface: '#ffffff',
+  green: '#586a48',
+  textMain: '#1c1c17',
+  textMuted: '#9e9e8e',
+  textSecondary: '#6b6b5e',
+};
 
 interface Props {
   onComplete: (breathTaken: boolean) => Promise<void>;
@@ -32,7 +38,6 @@ export function BreathingStep({
       clearTimeout(skipTimeoutRef.current);
       skipTimeoutRef.current = null;
     }
-
     if (breathingTimeoutRef.current) {
       clearTimeout(breathingTimeoutRef.current);
       breathingTimeoutRef.current = null;
@@ -41,13 +46,9 @@ export function BreathingStep({
 
   const completeStep = useCallback(
     async (breathTaken: boolean) => {
-      if (isCompleting) {
-        return;
-      }
-
+      if (isCompleting) return;
       clearPendingTimeouts();
       setIsCompleting(true);
-
       try {
         await onComplete(breathTaken);
       } catch {
@@ -61,14 +62,8 @@ export function BreathingStep({
   );
 
   const handleSkip = () => {
-    if (showSkipMessage || breathing || isCompleting) {
-      return;
-    }
-
-    if (skipTimeoutRef.current) {
-      clearTimeout(skipTimeoutRef.current);
-    }
-
+    if (showSkipMessage || breathing || isCompleting) return;
+    if (skipTimeoutRef.current) clearTimeout(skipTimeoutRef.current);
     setShowSkipMessage(true);
     skipTimeoutRef.current = setTimeout(() => {
       void completeStep(false);
@@ -76,22 +71,15 @@ export function BreathingStep({
   };
 
   const handleStartBreathing = () => {
-    if (showSkipMessage || breathing || isCompleting) {
-      return;
-    }
-
+    if (showSkipMessage || breathing || isCompleting) return;
     setBreathing(true);
   };
 
   useEffect(() => {
-    if (!breathing) {
-      return;
-    }
-
+    if (!breathing) return;
     breathingTimeoutRef.current = setTimeout(() => {
       void completeStep(true);
     }, BREATHING_DURATION_MS);
-
     return () => {
       if (breathingTimeoutRef.current) {
         clearTimeout(breathingTimeoutRef.current);
@@ -109,78 +97,112 @@ export function BreathingStep({
 
   if (error) {
     return (
-      <AppScreen centered contentContainerStyle={styles.screenContent}>
+      <View style={styles.center}>
         <Text style={styles.errorText}>{error}</Text>
-      </AppScreen>
+      </View>
     );
   }
 
   if (showSkipMessage) {
     return (
-      <AppScreen centered contentContainerStyle={styles.screenContent}>
+      <View style={styles.center}>
         {isTimedSessionActive ? <Text style={styles.timer}>{secondsRemaining}s</Text> : null}
         <Text style={styles.skipMessage}>{COPY.daily.breathSkipMessage}</Text>
-      </AppScreen>
+      </View>
     );
   }
 
   if (breathing) {
     return (
-      <AppScreen centered contentContainerStyle={styles.screenContent}>
+      <View style={styles.breathingLayout}>
         {isTimedSessionActive ? <Text style={styles.timer}>{secondsRemaining}s</Text> : null}
-        <BreathingAnimation />
-      </AppScreen>
+        <BreathingAnimation isBreathing={breathing} />
+        <TouchableOpacity
+          style={styles.skipPill}
+          onPress={handleSkip}
+          disabled={isCompleting}
+        >
+          <Text style={styles.skipPillText}>{COPY.daily.breathSkip}</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
   return (
-    <AppScreen centered contentContainerStyle={styles.screenContent}>
+    <View style={styles.breathingLayout}>
       {isTimedSessionActive ? <Text style={styles.timer}>{secondsRemaining}s</Text> : null}
-
-      <TouchableOpacity onPress={handleStartBreathing} disabled={isCompleting}>
-        <Text style={styles.prompt}>{COPY.daily.breathPrompt}</Text>
+      <BreathingAnimation isBreathing={false} />
+      <TouchableOpacity
+        style={styles.startPrompt}
+        onPress={handleStartBreathing}
+        disabled={isCompleting}
+      >
+        <Text style={styles.startPromptText}>{COPY.daily.breathPrompt}</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={handleSkip} style={styles.skipButton} disabled={isCompleting}>
-        <Text style={styles.skipText}>{COPY.daily.breathSkip}</Text>
+      <TouchableOpacity
+        style={styles.skipPill}
+        onPress={handleSkip}
+        disabled={isCompleting}
+      >
+        <Text style={styles.skipPillText}>{COPY.daily.breathSkip}</Text>
       </TouchableOpacity>
-    </AppScreen>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screenContent: {
-    width: '100%',
-    paddingVertical: SPACING.xxxl,
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  prompt: {
-    fontSize: FONT_SIZES.xxl,
-    color: COLORS.primary,
-    fontWeight: '300',
-    marginBottom: SPACING.xxl,
+  breathingLayout: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 24,
   },
   timer: {
     position: 'absolute',
-    top: SPACING.xl,
+    top: 0,
     right: 0,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.muted,
+    fontSize: 13,
+    color: S.textMuted,
   },
-  skipButton: {
-    marginTop: SPACING.xl,
+  startPrompt: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
   },
-  skipText: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.muted,
+  startPromptText: {
+    fontSize: 18,
+    fontWeight: '300',
+    color: S.textSecondary,
+    textAlign: 'center',
+  },
+  skipPill: {
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 20,
+    backgroundColor: S.surface,
+    shadowColor: '#586a48',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  skipPillText: {
+    fontSize: 14,
+    color: S.textMuted,
   },
   skipMessage: {
-    fontSize: FONT_SIZES.lg,
-    color: COLORS.secondary,
+    fontSize: 18,
+    color: S.textSecondary,
     fontStyle: 'italic',
+    textAlign: 'center',
   },
   errorText: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.secondary,
+    fontSize: 15,
+    color: S.textSecondary,
     textAlign: 'center',
   },
 });
